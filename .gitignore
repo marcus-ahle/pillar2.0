@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local Claude Code settings (preview server config, etc.)
+.claude/
+
+# Python (serve.py preview server)
+__pycache__/
+*.pyc
+
+# Netlify CLI local state
+.netlify/
+
+# Secrets (EZFacility / API keys if added later)
+.env
+.env.*
+!.env.example
+
+# Future Astro build (see strategy.html)
+node_modules/
+dist/
+.astro/
+
+# Logs
+*.log
+npm-debug.log*

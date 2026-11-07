@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Register: Programs, Teams & Pricing | Pillar Sports Academy</title>
+  <meta name="description" content="Register for Pillar camps, clinics and lessons. Travel team pricing, what's included, and age group cutoffs.">
+  <meta name="theme-color" content="#211032">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=2">
+</head>
+<body>
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="crumb"><a href="index.html">Home</a> / Register</p>
+        <h1 class="h-xl">Three steps. <span class="acc">Two minutes.</span></h1>
+        <p class="lead">Pick a program, choose a date, and check out on our secure registration portal. It's built to work on your phone.</p>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0">
+      <div class="wrap">
+        <ol class="steps">
+          <li data-in><h3>Find your program</h3><p>Start on your sport's page (<a href="hockey.html">Hockey</a>, <a href="baseball.html">Baseball</a>, <a href="softball.html">Softball</a>) or use the <a href="programs.html">program finder</a>.</p></li>
+          <li data-in><h3>Pick a date</h3><p>Tap a date to open our secure EZFacility checkout. Private lessons and team inquiries go straight to the coach.</p></li>
+          <li data-in><h3>You're in</h3><p>You'll get a confirmation email with everything you need for day one.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec-sm" aria-labelledby="open-title">
+      <div class="wrap rail-head">
+        <div><p class="kicker">Open now</p><h2 class="h-xl" id="open-title">Registration <span class="outline">open</span></h2></div>
+        <a class="btn btn-ghost btn-sm" href="programs.html?open=1">All open programs</a>
+      </div>
+      <div class="rail" id="open-now" tabindex="0" aria-label="Programs open for registration, scroll sideways"></div>
+    </section>
+
+    <section class="sec" id="teams" aria-labelledby="teams-title">
+      <div class="wrap">
+        <div class="rail-head">
+          <div><p class="kicker">Teams & pricing</p><h2 class="h-xl" id="teams-title">Wear the<br><span class="outline">purple</span></h2></div>
+          <p class="muted" style="max-width:46ch;margin:0">Season costs are estimates per player and cover a full year of development, not just games.</p>
+        </div>
+        <div class="price-panels" id="team-cards"></div>
+      </div>
+    </section>
+
+    <section class="sec-sm" aria-labelledby="calc-title" style="padding-top:0">
+      <div class="wrap split">
+        <div>
+          <p class="kicker">Age groups</p>
+          <h2 class="h-xl" id="calc-title" style="font-size:clamp(2.4rem,5vw,4.5rem)">Where do they <span class="acc">fit?</span></h2>
+          <p class="muted">Baseball uses an <strong>April 30</strong> birthdate cutoff. Softball uses <strong>August 31, 2026</strong>. Enter your athlete's birthday for a quick estimate.</p>
+          <p class="note">Always confirm with the official calculators: <a href="https://application.aausports.org/sbl/calculator/agecalculator.asp" target="_blank" rel="noopener">AAU baseball</a> · <a href="https://www.usasoftball.com/play-usa-softball/memberships/" target="_blank" rel="noopener">USA Softball</a></p>
+        </div>
+        <form class="led" id="calc" novalidate>
+          <div class="two">
+            <div class="fld"><label for="c-sport">Sport</label><select id="c-sport"><option value="baseball">Baseball</option><option value="softball">Softball</option></select></div>
+            <div class="fld"><label for="c-dob">Athlete's birthday</label><input id="c-dob" type="date" required></div>
+          </div>
+          <button class="btn btn-acc" type="submit">Check age group</button>
+          <div class="led-out" id="calc-result" role="status" aria-live="polite"><span class="note">Waiting for a birthday…</span></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="sec" aria-labelledby="faq-title">
+      <div class="wrap" style="max-width:1100px">
+        <p class="kicker">FAQ</p>
+        <h2 class="h-xl" id="faq-title">Good <span class="outline">questions</span></h2>
+        <div class="faq" id="faq" style="margin-top:2rem"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/site.js?v=2"></script>
+  <script src="assets/js/chrome.js?v=2"></script>
+  <script>
+  (() => {
+    // Open now: next dated session of each open program
+    const open = sortPrograms(PROGRAMS.filter(p => nextOpenDate(p))).slice(0, 8);
+    document.getElementById('open-now').innerHTML = open.map(p => ticket(p, upcomingSessions(p).find(s => !s.soldOut))).join('');
+
+    // Team pricing
+    const check = icon('check');
+    const teams = ['vb-club', 'bb-12u', 'bb-15u', 'sb-travel'].map(id => PROGRAMS.find(p => p.id === id)).filter(Boolean);
+    document.getElementById('team-cards').innerHTML = teams.map(teamPanel).join('') + `
+      <article class="panel dark-alt" data-in data-num="+">
+        <p class="kicker">More teams</p>
+        <h3>Hockey & in-house volleyball</h3>
+        <p class="muted">Pillar Hockey teams have their own evaluation process, and volleyball In-House & FLEX teams give grades 3–8 a step before club.</p>
+        <ul>
+          <li>${check}<span>Hockey teams: <a href="mailto:hockey@pillarfitness.com">hockey@pillarfitness.com</a></span></li>
+          <li>${check}<span>Volleyball In-House teams for grades 3/4, 5/6 and 7/8</span></li>
+          <li>${check}<span>FLEX evaluation day each season</span></li>
+        </ul>
+        <a class="btn btn-ghost" href="volleyball.html#teams">Volleyball teams ${arrowNE}</a>
+      </article>`;
+
+    // Age group calculator (estimate)
+    document.getElementById('calc').addEventListener('submit', e => {
+      e.preventDefault();
+      const dob = document.getElementById('c-dob'), out = document.getElementById('calc-result');
+      if (!dob.value) { out.innerHTML = '<p>Please enter a birthday.</p>'; dob.focus(); return; }
+      out.innerHTML = ageGroupResult(document.getElementById('c-sport').value, dob.value);
+    });
+
+    const faqs = [
+      ['Where do I register?', 'Most camps and clinics register through our secure online portal (EZFacility). Tap any date on a program to go straight to checkout. Private lessons and team inquiries are booked directly with the coach by email or phone.'],
+      ['A session is sold out. Can I get on a list?', 'Yes. Tap “Notify me” on the program and we\'ll email you when new dates are posted or a spot opens.'],
+      ['Which age group should my athlete register for?', 'Baseball uses an April 30 birthdate cutoff and softball uses August 31, 2026. Use the calculator above for a quick estimate, then confirm with the official calculator.'],
+      ['What do travel team costs include?', 'Each team panel above lists everything included. Costs are estimates per player and cover the full development year, including winter training, performance training, tournaments and uniforms.'],
+      ['Who do I contact with questions?', 'Email drew@pillarfitness.com for general and baseball questions, hockey@pillarfitness.com for hockey, angela@pillarfitness.com for softball, and volleyball@pillarfitness.com for volleyball. Or use our contact form.'],
+    ];
+    document.getElementById('faq').innerHTML = faqs.map(([q, a]) => `<details><summary>${q}<i aria-hidden="true"></i></summary><p>${a}</p></details>`).join('');
+
+    revealB();
+  })();
+  </script>
+</body>
+</html>

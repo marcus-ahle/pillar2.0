@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Style Guide | Pillar Sports Academy Redesign</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    .sg-section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+    .sg-section > h2 { font-size: 1.6rem; }
+    .swatches { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+    .swatch { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: #fff; }
+    .swatch .chipc { height: 96px; display: flex; align-items: flex-end; padding: .6rem .75rem; font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; }
+    .swatch .info { padding: .75rem; font-size: .85rem; }
+    .swatch .info strong { display: block; color: var(--ink); font-size: .95rem; }
+    .swatch code { font-size: .8rem; color: var(--muted); }
+    .type-row { display: grid; grid-template-columns: 1fr; gap: .25rem; padding: 1rem 0; border-bottom: 1px dashed var(--line); }
+    .type-row .spec { font-size: .8rem; color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+    @media (min-width: 760px) { .type-row { grid-template-columns: 220px 1fr; align-items: baseline; } }
+    .demo-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1rem; }
+    .demo-dark { background: var(--ink); padding: 1.25rem; border-radius: var(--r); }
+    .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+    .icons div { border: 1px solid var(--line); border-radius: 12px; padding: .9rem .5rem; text-align: center; font-size: .75rem; color: var(--muted); }
+    .icons svg { width: 26px; height: 26px; color: var(--ink); display: block; margin: 0 auto .4rem; }
+    .tokens { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    .tokens th, .tokens td { text-align: left; padding: .6rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .tokens th { font-family: var(--font-display); color: var(--ink); font-weight: 600; }
+    .table-wrap { overflow-x: auto; }
+    .sg-nav { position: sticky; top: var(--header-h); z-index: 50; background: #fff; border-bottom: 1px solid var(--line); }
+    .sg-nav .chip-row { padding: .75rem 0; flex-wrap: nowrap; overflow-x: auto; }
+    .sg-nav a.chip { text-decoration: none; white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="../strategy.html">Redesign overview</a> / Style guide</nav>
+        <h1>Component & style guide</h1>
+        <p class="lead">The Pillar design system: colors, type, buttons, cards and form patterns, all built from the existing brand and tested for WCAG AA.</p>
+      </div>
+    </section>
+    <nav class="sg-nav" aria-label="Style guide sections"><div class="container chip-row">
+      <a class="chip" href="#logo">Logo</a><a class="chip" href="#color">Color</a><a class="chip" href="#type">Typography</a><a class="chip" href="#buttons">Buttons</a><a class="chip" href="#labels">Chips & badges</a><a class="chip" href="#cards">Cards</a><a class="chip" href="#forms">Forms</a><a class="chip" href="#icons">Icons</a><a class="chip" href="#tokens">Tokens</a><a class="chip" href="#a11y">Accessibility</a>
+    </div></nav>
+
+    <div class="container">
+      <section class="sg-section" id="logo">
+        <h2>Logo</h2>
+        <div class="grid grid-3">
+          <div class="card center"><img id="lg1" alt="Pillar Fitness & Sports logo" style="width:140px;margin:0 auto"></div>
+          <div class="card center demo-dark" style="display:grid;place-items:center"><img id="lg2" alt="Pillar Fitness & Sports logo on purple" style="width:140px;border-radius:50%"></div>
+          <div class="card"><h3>Usage</h3><ul class="muted" style="padding-left:1.1rem;margin:0">
+            <li>Keep the existing circular mark; minimum size 40px on screen.</li>
+            <li>Clear space equal to the height of one pillar column.</li>
+            <li>Pair with the “Pillar Sports” wordmark in Poppins 800.</li>
+            <li><strong>Recommended:</strong> redraw as SVG. The current file is a 176px PNG that blurs on phones.</li></ul></div>
+        </div>
+        <div class="grid grid-3" style="margin-top:16px">
+          <div class="card center"><img id="lg3" alt="Pillar Hockey Academy logo" style="width:120px;margin:0 auto"><p class="note mb-0" style="margin-top:.5rem">Hockey sub-brand</p></div>
+          <div class="card center" style="display:grid;place-items:center"><img id="lg4" alt="Pillar Baseball wordmark" style="width:200px"><p class="note mb-0">Baseball sub-brand</p></div>
+          <div class="card center" style="display:grid;place-items:center"><img id="lg5" alt="Pillar Softball wordmark" style="width:200px"><p class="note mb-0">Softball sub-brand</p></div>
+        </div>
+      </section>
+
+      <section class="sg-section" id="color">
+        <h2>Color</h2>
+        <p class="muted">Pillar purple and lavender come straight from the current site. Lavender is an accent: on white it's only for large display text, and small text uses the darker Lavender 600.</p>
+        <h3 style="margin-top:1.5rem">Brand</h3>
+        <div class="swatches" id="sw-brand"></div>
+        <h3 style="margin-top:1.5rem">Neutrals & status</h3>
+        <div class="swatches" id="sw-neutral"></div>
+        <h3 style="margin-top:1.5rem">Sport accents</h3>
+        <p class="muted">Used for color bars, dots and tag backgrounds to help parents scan by sport. Never used for body text.</p>
+        <div class="swatches" id="sw-sport"></div>
+      </section>
+
+      <section class="sg-section" id="type">
+        <h2>Typography</h2>
+        <p class="muted"><strong>Poppins</strong> (from the current site) for headlines and UI labels; <strong>Inter</strong> for body copy and small text, chosen for legibility on phones. Both are free Google Fonts.</p>
+        <div class="type-row"><span class="spec">Display / H1<br>Poppins 800 · 40–84px · −3.5%</span><span style="font-family:var(--font-display);font-weight:800;font-size:clamp(2.2rem,6vw,4rem);line-height:1;letter-spacing:-.035em;color:var(--ink)">Elevate the Game.</span></div>
+        <div class="type-row"><span class="spec">H2<br>Poppins 700 · 30–46px</span><span style="font-family:var(--font-display);font-weight:700;font-size:clamp(1.85rem,4.2vw,2.85rem);line-height:1.1;letter-spacing:-.02em;color:var(--ink)">Four sports. One standard.</span></div>
+        <div class="type-row"><span class="spec">H3<br>Poppins 700 · 20px</span><h3 class="mb-0">Shooting Clinics</h3></div>
+        <div class="type-row"><span class="spec">Eyebrow<br>Poppins 600 · 12.5px · caps +14%</span><span class="eyebrow mb-0">Coming up</span></div>
+        <div class="type-row"><span class="spec">Lead<br>Inter 400 · 17–20px</span><p class="lead mb-0">Elite coaching, competitive teams and small-group training.</p></div>
+        <div class="type-row"><span class="spec">Body<br>Inter 400 · 16px / 1.6</span><p class="mb-0">Our 60-minute one-on-one private lessons are tailored to each player's individual needs, with a focus on developing skills, improving mechanics and building confidence.</p></div>
+        <div class="type-row"><span class="spec">Small / note<br>Inter 400 · 13.6px</span><p class="note mb-0">Volleyball details on pillarvolleyball.com</p></div>
+      </section>
+
+      <section class="sg-section" id="buttons">
+        <h2>Buttons & links</h2>
+        <p class="muted">Pill shape, 48px minimum height (40px small). One primary action per view. Register is always the primary button.</p>
+        <div class="demo-row"><a class="btn btn-primary" href="#buttons">Primary</a><a class="btn btn-outline" href="#buttons">Outline</a><a class="btn btn-primary btn-sm" href="#buttons">Small</a><span class="btn btn-primary" aria-disabled="true">Disabled</span><a class="link-arrow" href="#buttons">Text link <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+        <div class="demo-row demo-dark on-dark"><a class="btn btn-accent" href="#buttons">Accent (on dark)</a><a class="btn btn-ghost-light" href="#buttons">Ghost (on dark)</a><a class="link-arrow" href="#buttons">Text link <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </section>
+
+      <section class="sg-section" id="labels">
+        <h2>Chips, tags & badges</h2>
+        <h3>Filter chips <span class="note">(toggle buttons with aria-pressed)</span></h3>
+        <div class="demo-row chip-row"><button class="chip" aria-pressed="true" type="button"><span class="dot dot-hockey"></span>Hockey</button><button class="chip" aria-pressed="false" type="button"><span class="dot dot-baseball"></span>Baseball</button><button class="chip" aria-pressed="false" type="button">9 – 11</button><button class="chip" aria-pressed="false" type="button">Beginner</button></div>
+        <h3>Sport & type tags</h3>
+        <div class="demo-row"><span class="tag tag-hockey">Hockey</span><span class="tag tag-baseball">Baseball</span><span class="tag tag-softball">Softball</span><span class="tag tag-volleyball">Volleyball</span><span class="tag tag-neutral">Clinic</span></div>
+        <h3>Status badges</h3>
+        <div class="demo-row"><span class="badge badge-open">Registration open</span><span class="badge badge-soon">In 9 days</span><span class="badge badge-full">Sold out</span><span class="badge badge-closed">New dates soon</span></div>
+      </section>
+
+      <section class="sg-section" id="cards">
+        <h2>Cards</h2>
+        <p class="muted">Program cards use the same fields every time: sport, type, status, ages, level and format, with dated sessions as tap targets that go straight to checkout.</p>
+        <div class="grid grid-3" id="card-demos" style="align-items:start"></div>
+        <h3 style="margin-top:2rem">Coach card</h3>
+        <div class="grid grid-4" id="coach-demo"></div>
+      </section>
+
+      <section class="sg-section" id="forms">
+        <h2>Form fields</h2>
+        <div class="card" style="max-width:640px">
+          <div class="form">
+            <div class="field"><label for="d1">Label</label><input id="d1" placeholder="Placeholder"></div>
+            <div class="field has-error"><label for="d2">Email</label><input id="d2" value="parent@" aria-invalid="true" aria-describedby="d2e"><p class="error" id="d2e">Please enter a valid email address.</p></div>
+            <div class="field"><label for="d3">Select</label><select id="d3"><option>Choose a sport</option></select></div>
+            <fieldset class="field"><legend>Checkbox pills</legend><div class="check-grid"><label><input type="checkbox" checked> Camps & clinics</label><label><input type="checkbox"> Private lessons</label></div></fieldset>
+          </div>
+        </div>
+      </section>
+
+      <section class="sg-section" id="icons">
+        <h2>Icons</h2>
+        <p class="muted">A small, consistent line-icon set (24px grid, 1.8 stroke). Decorative icons are hidden from screen readers.</p>
+        <div class="icons" id="icon-grid"></div>
+      </section>
+
+      <section class="sg-section" id="tokens">
+        <h2>Spacing, radius & elevation</h2>
+        <div class="table-wrap"><table class="tokens">
+          <thead><tr><th>Token</th><th>Value</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td><code>--gutter</code></td><td>16–32px (fluid)</td><td>Page side padding; 16px on phones</td></tr>
+            <tr><td><code>.section</code></td><td>64–120px</td><td>Vertical rhythm between homepage sections</td></tr>
+            <tr><td><code>--r-sm / --r / --r-lg</code></td><td>8 / 14 / 24px</td><td>Inputs / small cards / cards & media</td></tr>
+            <tr><td><code>--shadow-sm</code></td><td>1–3px soft</td><td>Resting cards</td></tr>
+            <tr><td><code>--shadow</code></td><td>8 / 24px</td><td>Hover, raised buttons</td></tr>
+            <tr><td><code>--max</code></td><td>1200px</td><td>Content max width</td></tr>
+            <tr><td>Touch target</td><td>≥ 44–48px</td><td>All buttons, chips, links in lists</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="sg-section" id="a11y" style="border:0">
+        <h2>Accessibility rules (WCAG 2.2 AA)</h2>
+        <div class="grid grid-2">
+          <ul class="muted" style="padding-left:1.1rem;margin:0">
+            <li>Text contrast ≥ 4.5:1 (large text ≥ 3:1); all pairs above are pre-checked.</li>
+            <li>Visible 3px focus ring on every interactive element.</li>
+            <li>Skip-to-content link and landmark regions on every page.</li>
+            <li>Filters are real buttons with <code>aria-pressed</code>; result counts announce via <code>aria-live</code>.</li>
+          </ul>
+          <ul class="muted" style="padding-left:1.1rem;margin:0">
+            <li>No images of text: coach bios and flyers become real HTML.</li>
+            <li>External links (registration, volleyball) are marked with an icon and open in a new tab.</li>
+            <li>Mobile menu and filter sheet trap focus and close on Escape.</li>
+            <li>Motion respects <code>prefers-reduced-motion</code>.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/site.js"></script>
+  <script>
+  (() => {
+    lg1.src = lg2.src = ASSETS.logo; lg3.src = ASSETS.hockeyLogo; lg4.src = ASSETS.baseballMark; lg5.src = ASSETS.softballMark;
+
+    // contrast math so the ratios shown are computed, not hand-typed
+    const lum = hex => { const c = hex.match(/\w\w/g).map(h => parseInt(h, 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+    const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return ((x + .05) / (y + .05)).toFixed(1); };
+    const sw = (name, hex, fg, note) => {
+      const r = ratio(hex, fg);
+      return `<div class="swatch"><div class="chipc" style="background:${hex};color:${fg}">Aa</div><div class="info"><strong>${name}</strong><code>${hex}</code><br>${note}<br><span class="badge ${r >= 4.5 ? 'badge-open' : r >= 3 ? 'badge-soon' : 'badge-full'}" style="margin-top:.4rem">${r}:1 with ${fg === '#ffffff' ? 'white' : fg}</span></div></div>`;
+    };
+    document.getElementById('sw-brand').innerHTML = [
+      sw('Pillar Purple', '#211032', '#ffffff', 'Primary · buttons, hero, footer'),
+      sw('Lavender', '#7877e6', '#211032', 'Accent · on dark, large type'),
+      sw('Lavender 600', '#4f4dc4', '#ffffff', 'Links & small accent text'),
+      sw('Lavender 100', '#ececfc', '#211032', 'Tints, active nav'),
+    ].join('');
+    document.getElementById('sw-neutral').innerHTML = [
+      sw('Ink text', '#1b1525', '#ffffff', 'Body text'),
+      sw('Muted', '#5b5566', '#ffffff', 'Secondary text'),
+      sw('Off-white', '#f4f4f3', '#211032', 'Alt section background'),
+      sw('Success', '#157347', '#ffffff', 'Open badges'),
+      sw('Alert', '#9b1c1c', '#ffffff', 'Errors, sold out'),
+    ].join('');
+    document.getElementById('sw-sport').innerHTML = Object.entries(SPORTS).map(([k, s]) => sw(s.name, s.color.toLowerCase(), '#211032', 'Bar, dot, tag tint')).join('');
+
+    const demos = ['hk-private', 'vb-4v4', 'bb-12u'].map(id => PROGRAMS.find(p => p.id === id));
+    document.getElementById('card-demos').innerHTML = demos.map(p => renderProgramCard(p)).join('');
+    document.getElementById('coach-demo').innerHTML = renderCoachCard(COACHES[0]) + renderCoachCard(COACHES[1]);
+    document.getElementById('icon-grid').innerHTML = Object.keys(ICONS).map(k => `<div>${icon(k)}${k}</div>`).join('');
+  })();
+  </script>
+</body>
+</html>

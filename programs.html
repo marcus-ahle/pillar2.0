@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Programs: Camps, Clinics, Lessons & Teams | Pillar Sports Academy</title>
+  <meta name="description" content="Find hockey, baseball, softball and volleyball camps, clinics, private lessons and teams. Filter by age, skill level, sport and date.">
+  <meta name="theme-color" content="#211032">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=2">
+</head>
+<body>
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="crumb"><a href="index.html">Home</a> / Programs</p>
+        <h1 class="h-xl">Find your <span class="outline">program</span></h1>
+        <p class="lead">Camps, clinics, lessons, training and teams. Filter by sport, age, level and date, then register in a couple of taps.</p>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0">
+      <div class="wrap finder">
+        <button class="btn btn-ghost btn-sm filter-toggle" type="button" id="open-filters" aria-controls="filters" aria-expanded="false" style="justify-self:start"></button>
+        <aside class="filters" id="filters" aria-label="Program filters">
+          <fieldset><legend>Sport</legend><div class="chips" data-group="sport"></div></fieldset>
+          <fieldset><legend>Athlete age</legend><div class="chips" data-group="age"></div></fieldset>
+          <fieldset><legend>Skill level</legend><div class="chips" data-group="level"></div></fieldset>
+          <fieldset><legend>Program type</legend><div class="chips" data-group="type"></div></fieldset>
+          <fieldset>
+            <legend><label for="date-filter">Date</label></legend>
+            <select id="date-filter">
+              <option value="">Any time</option>
+              <option value="30">Next 30 days</option>
+              <option value="90">Next 3 months</option>
+              <option value="ongoing">Year-round only</option>
+            </select>
+          </fieldset>
+          <fieldset style="margin-bottom:1rem">
+            <legend class="sr-only">Availability</legend>
+            <label class="toggle"><input type="checkbox" id="open-only"> Only programs I can register for now</label>
+          </fieldset>
+          <button class="btn btn-ghost btn-sm" type="button" id="clear" hidden>Clear all filters</button>
+        </aside>
+
+        <div>
+          <div class="results-bar">
+            <p class="count" id="result-count" aria-live="polite"></p>
+          </div>
+          <div class="pills" id="active-filters"></div>
+          <div id="notes"></div>
+          <div class="pgrid" id="results"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0">
+      <div class="wrap">
+        <div class="contact-slab">
+          <div>
+            <p class="mono" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:1rem">Not sure where to start?</p>
+            <h2 class="h-xl">Can't find the right fit?</h2>
+            <p style="margin:1rem 0 0;font-weight:500">Tell us about your athlete and we'll recommend a program, or let you know when new dates post.</p>
+          </div>
+          <div class="enter" style="justify-content:flex-end">
+            <a class="btn btn-dark" href="contact.html">Ask a coach</a>
+            <a class="btn btn-line" href="schedule.html">View schedule</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/site.js?v=2"></script>
+  <script src="assets/js/chrome.js?v=2"></script>
+  <script>
+  (() => {
+    const AGES = { '8': [0, 8, '8 & under'], '9-11': [9, 11, '9 – 11'], '12-14': [12, 14, '12 – 14'], '15-18': [15, 18, '15 – 18'] };
+    const GROUPS = {
+      sport: Object.entries(SPORTS).map(([k, s]) => [k, s.name]),
+      age: Object.entries(AGES).map(([k, v]) => [k, v[2]]),
+      level: LEVELS.map(l => [l, l]),
+      type: TYPES.map(t => [t, t]),
+    };
+    const DATE_LABELS = { '30': 'Next 30 days', '90': 'Next 3 months', ongoing: 'Year-round' };
+    const LIST_KEYS = ['sport', 'age', 'level', 'type'];
+
+    // ----- state <-> URL -----
+    const params = new URLSearchParams(location.search);
+    const listParam = k => (params.get(k) || '').split(',').filter(Boolean);
+    const state = Object.fromEntries(LIST_KEYS.map(k => [k, new Set(listParam(k))]));
+    state.date = params.get('date') || '';
+    state.open = params.get('open') === '1';
+    // Fresh visit with no filters in the URL: start on the sport they last viewed
+    const remembered = getSport();
+    if (remembered && ![...LIST_KEYS, 'date', 'open'].some(k => params.has(k))) state.sport.add(remembered);
+    const syncURL = () => {
+      const p = new URLSearchParams();
+      LIST_KEYS.forEach(k => state[k].size && p.set(k, [...state[k]].join(',')));
+      if (state.date) p.set('date', state.date);
+      if (state.open) p.set('open', '1');
+      ['today', 'review'].forEach(k => params.has(k) && p.set(k, params.get(k)));
+      history.replaceState(null, '', p.toString() ? '?' + p.toString().replace(/review=(&|$)/, 'review$1') : location.pathname);
+    };
+
+    // ----- controls -----
+    document.querySelectorAll('[data-group]').forEach(row => {
+      const g = row.dataset.group;
+      row.setAttribute('role', 'group');
+      row.innerHTML = GROUPS[g].map(([val, label]) => `<button type="button" data-val="${val}" aria-pressed="false">${label}</button>`).join('');
+      row.addEventListener('click', e => {
+        const b = e.target.closest('button'); if (!b) return;
+        const v = b.dataset.val; state[g].has(v) ? state[g].delete(v) : state[g].add(v); update();
+      });
+    });
+    const dateSel = document.getElementById('date-filter'), openChk = document.getElementById('open-only');
+    dateSel.addEventListener('change', () => { state.date = dateSel.value; update(); });
+    openChk.addEventListener('change', () => { state.open = openChk.checked; update(); });
+    const clearAll = () => { LIST_KEYS.forEach(k => state[k].clear()); state.date = ''; state.open = false; update(); };
+    document.getElementById('clear').addEventListener('click', clearAll);
+
+    function matches(p) {
+      if (state.sport.size && !state.sport.has(p.sport)) return false;
+      if (state.age.size && ![...state.age].some(k => AGES[k] && p.ageMin <= AGES[k][1] && p.ageMax >= AGES[k][0])) return false;
+      if (state.level.size && !p.level.some(l => state.level.has(l))) return false;
+      if (state.type.size && !state.type.has(p.type)) return false;
+      if (state.open && programStatus(p).key !== 'open') return false;
+      if (state.date === 'ongoing' && !(p.ongoing && !p.sessions)) return false;
+      if (state.date === '30' || state.date === '90') { const d = nextOpenDate(p); if (!d || daysFromToday(d) > Number(state.date)) return false; }
+      return true;
+    }
+
+    const results = document.getElementById('results'), countEl = document.getElementById('result-count');
+    const activeEl = document.getElementById('active-filters'), toggle = document.getElementById('open-filters');
+    const filters = document.getElementById('filters');
+
+    function update() {
+      document.querySelectorAll('[data-group]').forEach(row => row.querySelectorAll('button').forEach(c =>
+        c.setAttribute('aria-pressed', String(state[row.dataset.group].has(c.dataset.val)))));
+      dateSel.value = state.date; openChk.checked = state.open;
+
+      const list = sortPrograms(PROGRAMS.filter(matches));
+      results.innerHTML = list.length ? list.map(programCard).join('') :
+        `<div class="empty"><h3>No programs match</h3><p>Try removing a filter, or <a href="contact.html">ask a coach</a> what's coming next.</p><button class="btn btn-ghost btn-sm" type="button" data-clear-inline>Clear all filters</button></div>`;
+      const inl = results.querySelector('[data-clear-inline]'); if (inl) inl.addEventListener('click', clearAll);
+      countEl.textContent = `${list.length} program${list.length === 1 ? '' : 's'}`;
+
+      const pills = [];
+      LIST_KEYS.forEach(g => state[g].forEach(v => {
+        const label = (GROUPS[g].find(x => x[0] === v) || [, v])[1];
+        pills.push(`<button type="button" data-g="${g}" data-v="${v}" aria-label="Remove filter ${label}">${label} ${icon('x')}</button>`);
+      }));
+      if (state.date) pills.push(`<button type="button" data-g="date" aria-label="Remove filter ${DATE_LABELS[state.date]}">${DATE_LABELS[state.date]} ${icon('x')}</button>`);
+      if (state.open) pills.push(`<button type="button" data-g="open" aria-label="Remove filter Open now">Open now ${icon('x')}</button>`);
+      activeEl.innerHTML = pills.join('');
+      toggle.innerHTML = `${icon('filter')} Filters${pills.length ? ` (${pills.length})` : ''}`;
+      document.getElementById('clear').hidden = !pills.length;
+
+      if (state.sport.size === 1) setSport([...state.sport][0]); else if (!state.sport.size) setSport(null);
+      const only = state.sport.size === 1 ? [...state.sport][0] : null;
+      document.getElementById('notes').innerHTML = scopeBanner(only);
+      const allBtn = document.querySelector('[data-all-sports]');
+      if (allBtn) allBtn.addEventListener('click', () => { state.sport.clear(); update(); });
+      syncURL();
+    }
+    activeEl.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const g = b.dataset.g;
+      if (g === 'date') state.date = ''; else if (g === 'open') state.open = false; else state[g].delete(b.dataset.v);
+      update();
+    });
+
+    // Mobile: filters expand in place under the toggle
+    toggle.addEventListener('click', () => {
+      const open = filters.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) filters.querySelector('button').focus();
+    });
+
+    update();
+  })();
+  </script>
+</body>
+</html>

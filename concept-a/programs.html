@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Programs: Camps, Clinics, Lessons & Teams | Pillar Sports Academy</title>
+  <meta name="description" content="Find hockey, baseball, softball and volleyball camps, clinics, private lessons and teams. Filter by age, skill level, sport and date.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Programs</nav>
+        <h1>Find the right program</h1>
+        <p class="lead">Camps, clinics, lessons, training and teams. Filter by sport, age, level and date, then register in a couple of taps.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container finder-layout">
+        <!-- Filters: sidebar on desktop, bottom sheet on mobile -->
+        <aside class="filters" id="filters" aria-label="Program filters">
+          <div class="sheet-head"><h2>Filters</h2><button class="menu-btn" type="button" data-close-filters aria-label="Close filters"></button></div>
+
+          <fieldset><legend>Sport</legend><div class="chip-row" data-group="sport"></div></fieldset>
+          <fieldset><legend>Athlete age</legend><div class="chip-row" data-group="age"></div></fieldset>
+          <fieldset><legend>Skill level</legend><div class="chip-row" data-group="level"></div></fieldset>
+          <fieldset><legend>Program type</legend><div class="chip-row" data-group="type"></div></fieldset>
+          <fieldset>
+            <legend><label for="date-filter">Date</label></legend>
+            <select id="date-filter">
+              <option value="">Any time</option>
+              <option value="30">Next 30 days</option>
+              <option value="90">Next 3 months</option>
+              <option value="ongoing">Year-round only</option>
+            </select>
+          </fieldset>
+          <fieldset>
+            <legend class="sr-only">Availability</legend>
+            <label class="toggle"><input type="checkbox" id="open-only"> Only show programs I can register for now</label>
+          </fieldset>
+          <button class="btn btn-outline btn-sm" type="button" data-clear style="display:none" id="clear-desktop">Clear all filters</button>
+
+          <div class="sheet-foot">
+            <button class="btn btn-outline" type="button" data-clear>Clear</button>
+            <button class="btn btn-primary" type="button" data-close-filters id="show-results">Show results</button>
+          </div>
+        </aside>
+        <div class="scrim" id="scrim"></div>
+
+        <div>
+          <div class="results-bar">
+            <p class="count mb-0" id="result-count" aria-live="polite"></p>
+            <button class="btn btn-outline btn-sm filter-toggle" type="button" id="open-filters" aria-controls="filters" aria-expanded="false"></button>
+          </div>
+          <div class="active-filters" id="active-filters"></div>
+          <div id="vb-note"></div>
+          <div class="grid grid-3" id="results"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-sm" style="padding-top:0">
+      <div class="container">
+        <div class="cta-band">
+          <div><h2>Can't find the right fit?</h2><p class="mb-0">Tell us about your athlete and we'll recommend a program, or let you know when new dates post.</p></div>
+          <div class="actions"><a class="btn btn-accent" href="contact.html">Ask a coach</a><a class="btn btn-ghost-light" href="schedule.html">View schedule</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/site.js"></script>
+  <script>
+  (() => {
+    const AGES = { '8': [0, 8, '8 & under'], '9-11': [9, 11, '9 – 11'], '12-14': [12, 14, '12 – 14'], '15-18': [15, 18, '15 – 18'] };
+    const GROUPS = {
+      sport: Object.entries(SPORTS).map(([k, s]) => [k, s.name, s.color]),
+      age: Object.entries(AGES).map(([k, v]) => [k, v[2]]),
+      level: LEVELS.map(l => [l, l]),
+      type: TYPES.map(t => [t, t]),
+    };
+    const DATE_LABELS = { '30': 'Next 30 days', '90': 'Next 3 months', ongoing: 'Year-round' };
+
+    // ----- state <-> URL -----
+    const params = new URLSearchParams(location.search);
+    const listParam = k => (params.get(k) || '').split(',').filter(Boolean);
+    const state = {
+      sport: new Set(listParam('sport')), age: new Set(listParam('age')),
+      level: new Set(listParam('level')), type: new Set(listParam('type')),
+      date: params.get('date') || '', open: params.get('open') === '1',
+    };
+    // Fresh visit with no filters in the URL: start on the sport they last viewed
+    const filterKeys = ['sport', 'age', 'level', 'type', 'date', 'open'];
+    const remembered = getSport();
+    if (remembered && !filterKeys.some(k => params.has(k))) state.sport.add(remembered);
+    const syncURL = () => {
+      const p = new URLSearchParams();
+      ['sport', 'age', 'level', 'type'].forEach(k => state[k].size && p.set(k, [...state[k]].join(',')));
+      if (state.date) p.set('date', state.date);
+      if (state.open) p.set('open', '1');
+      const t = new URLSearchParams(location.search).get('today'); if (t) p.set('today', t);
+      history.replaceState(null, '', p.toString() ? '?' + p : location.pathname);
+    };
+
+    // ----- render chips -----
+    document.querySelectorAll('[data-group]').forEach(row => {
+      const g = row.dataset.group;
+      row.innerHTML = GROUPS[g].map(([val, label, color]) =>
+        `<button type="button" class="chip" data-val="${val}" aria-pressed="false">${color ? `<span class="dot" style="background:${color}"></span>` : ''}${label}</button>`).join('');
+      row.addEventListener('click', e => {
+        const b = e.target.closest('.chip'); if (!b) return;
+        const v = b.dataset.val; state[g].has(v) ? state[g].delete(v) : state[g].add(v); update();
+      });
+    });
+    const dateSel = document.getElementById('date-filter');
+    const openChk = document.getElementById('open-only');
+    dateSel.addEventListener('change', () => { state.date = dateSel.value; update(); });
+    openChk.addEventListener('change', () => { state.open = openChk.checked; update(); });
+    document.querySelectorAll('[data-clear]').forEach(b => b.addEventListener('click', () => {
+      ['sport', 'age', 'level', 'type'].forEach(k => state[k].clear()); state.date = ''; state.open = false; update();
+    }));
+
+    // ----- filtering -----
+    function matches(p) {
+      if (state.sport.size && !state.sport.has(p.sport)) return false;
+      if (state.age.size && ![...state.age].some(k => AGES[k] && p.ageMin <= AGES[k][1] && p.ageMax >= AGES[k][0])) return false;
+      if (state.level.size && !p.level.some(l => state.level.has(l))) return false;
+      if (state.type.size && !state.type.has(p.type)) return false;
+      const st = programStatus(p);
+      if (state.open && st.key !== 'open') return false;
+      if (state.date === 'ongoing' && !(p.ongoing && !p.sessions)) return false;
+      if (state.date === '30' || state.date === '90') {
+        const d = nextOpenDate(p); if (!d || daysFromToday(d) > Number(state.date)) return false;
+      }
+      return true;
+    }
+
+    const results = document.getElementById('results');
+    const countEl = document.getElementById('result-count');
+    const activeEl = document.getElementById('active-filters');
+    const openBtn = document.getElementById('open-filters');
+    const showBtn = document.getElementById('show-results');
+
+    function update() {
+      // reflect state in controls
+      document.querySelectorAll('[data-group]').forEach(row => row.querySelectorAll('.chip').forEach(c =>
+        c.setAttribute('aria-pressed', state[row.dataset.group].has(c.dataset.val))));
+      dateSel.value = state.date; openChk.checked = state.open;
+
+      const list = sortPrograms(PROGRAMS.filter(matches));
+      results.innerHTML = list.length ? list.map(p => renderProgramCard(p)).join('') :
+        `<div class="empty" style="grid-column:1/-1"><h3>No programs match those filters</h3><p>Try removing a filter, or <a href="contact.html">ask a coach</a> what's coming next.</p><button class="btn btn-outline btn-sm" type="button" data-clear-inline>Clear all filters</button></div>`;
+      const inl = results.querySelector('[data-clear-inline]');
+      if (inl) inl.addEventListener('click', () => document.querySelector('[data-clear]').click());
+
+      countEl.textContent = `${list.length} program${list.length === 1 ? '' : 's'}`;
+      showBtn.textContent = `Show ${list.length} result${list.length === 1 ? '' : 's'}`;
+
+      // active filter pills
+      const pills = [];
+      ['sport', 'age', 'level', 'type'].forEach(g => state[g].forEach(v => {
+        const label = (GROUPS[g].find(x => x[0] === v) || [, v])[1];
+        pills.push(`<button type="button" data-g="${g}" data-v="${v}" aria-label="Remove filter ${label}">${label} ${icon('x')}</button>`);
+      }));
+      if (state.date) pills.push(`<button type="button" data-g="date" aria-label="Remove filter ${DATE_LABELS[state.date]}">${DATE_LABELS[state.date]} ${icon('x')}</button>`);
+      if (state.open) pills.push(`<button type="button" data-g="open" aria-label="Remove filter Open now">Open now ${icon('x')}</button>`);
+      activeEl.innerHTML = pills.join('');
+      const n = pills.length;
+      openBtn.innerHTML = `${icon('filter')} Filters${n ? ` (${n})` : ''}`;
+      document.getElementById('clear-desktop').style.display = n ? '' : 'none';
+
+      if (state.sport.size === 1) setSport([...state.sport][0]); else if (!state.sport.size) setSport(null);
+      const only = state.sport.size === 1 ? [...state.sport][0] : null;
+      const scope = only && only !== 'volleyball'
+        ? `<div class="sport-scope" style="--sport:${SPORTS[only].color}"><p>Showing <strong>${SPORTS[only].name}</strong> only.</p><a href="${sportLink(only)}">${SPORTS[only].name} home</a><button type="button" data-all-sports>Show all sports</button></div>` : '';
+      document.getElementById('vb-note').innerHTML = scope + (state.sport.has('volleyball')
+        ? `<p class="card" style="margin-bottom:1.25rem;padding:1rem 1.25rem;display:flex;gap:.75rem;align-items:center;background:var(--lav-50);border-color:var(--lav-200)">${icon('volleyball')}<span>Pillar Volleyball has its own site with full program details. <a href="${SPORTS.volleyball.external}" target="_blank" rel="noopener">Visit pillarvolleyball.com</a></span></p>` : '');
+      const allBtn = document.querySelector('[data-all-sports]');
+      if (allBtn) allBtn.addEventListener('click', () => { state.sport.clear(); update(); });
+      syncURL();
+    }
+    activeEl.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const g = b.dataset.g;
+      if (g === 'date') state.date = ''; else if (g === 'open') state.open = false; else state[g].delete(b.dataset.v);
+      update();
+    });
+
+    // ----- mobile bottom sheet -----
+    const sheet = document.getElementById('filters'), scrim = document.getElementById('scrim');
+    sheet.querySelector('.menu-btn').innerHTML = icon('x');
+    const openSheet = () => { sheet.classList.add('open'); scrim.classList.add('show'); openBtn.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; sheet.querySelector('.chip').focus(); };
+    const closeSheet = () => { if (!sheet.classList.contains('open')) return; sheet.classList.remove('open'); scrim.classList.remove('show'); openBtn.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; openBtn.focus(); };
+    openBtn.addEventListener('click', openSheet);
+    scrim.addEventListener('click', closeSheet);
+    sheet.querySelectorAll('[data-close-filters]').forEach(b => b.addEventListener('click', closeSheet));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+    update();
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Redesign Overview | Pillar Sports Academy</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v=2">
+  <style>
+    .doc-section { padding: clamp(48px, 7vw, 88px) 0; border-bottom: 1px solid var(--line); }
+    .doc-section:last-of-type { border: 0; }
+    .num { font-family: var(--font-display); font-weight: 800; color: var(--lav); font-size: 1rem; letter-spacing: .1em; }
+    .audit { display: grid; gap: 12px; }
+    .audit-item { display: grid; gap: .75rem 2rem; padding: 1.4rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: #fff; }
+    .audit-item h3 { font-size: 1.1rem; margin: 0; }
+    .audit-item .lbl { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: .3rem; }
+    .audit-item .prob .lbl { color: var(--bad); }
+    .audit-item .fix .lbl { color: var(--ok); }
+    .audit-item p { margin: 0; font-size: .95rem; }
+    .audit-item .prob p { color: var(--muted); }
+    @media (min-width: 860px) { .audit-item { grid-template-columns: 1fr 1fr; } .audit-item h3 { grid-column: 1 / -1; } }
+    .tree, .tree ul { list-style: none; margin: 0; padding: 0; }
+    .tree ul { margin-left: 1.1rem; padding-left: 1.1rem; border-left: 2px solid var(--line); }
+    .tree li { position: relative; padding: .35rem 0; }
+    .tree ul > li::before { content: ""; position: absolute; left: -1.1rem; top: 1.05rem; width: .8rem; border-top: 2px solid var(--line); }
+    .tree .node { display: inline-flex; align-items: center; gap: .5rem; flex-wrap: wrap; padding: .45rem .8rem; border-radius: 10px; background: #fff; border: 1px solid var(--line); font-weight: 600; color: var(--ink); font-size: .95rem; }
+    .tree .node.root { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .tree .node.later { border-style: dashed; color: var(--muted); font-weight: 500; }
+    .tree .node.ext { background: var(--lav-50); }
+    .tree .node code { font-weight: 400; font-size: .78rem; color: var(--muted); }
+    .tree .node.root code { color: var(--on-dark-muted); }
+    .nav-mock { border: 1px solid var(--line); border-radius: var(--r); padding: 1rem; background: #fff; font-size: .9rem; }
+    .nav-mock .bar { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .9rem; padding: .7rem .9rem; border-radius: 10px; background: var(--bg-alt); }
+    .nav-mock .bar b { font-family: var(--font-display); color: var(--ink); margin-right: auto; }
+    .nav-mock .pill { background: var(--ink); color: #fff; border-radius: 999px; padding: .25rem .7rem; font-weight: 600; font-size: .8rem; }
+    .phase { display: flex; flex-direction: column; }
+    .phase h3 { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+    .phase ul { list-style: none; padding: 0; margin: .5rem 0 0; display: grid; gap: .55rem; font-size: .93rem; }
+    .phase li { display: flex; gap: .55rem; }
+    .phase li svg { width: 18px; height: 18px; flex: none; margin-top: 3px; color: var(--lav-600); }
+    .phase.p1 { border: 2px solid var(--ink); }
+    .stack { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .stack th, .stack td { text-align: left; padding: .85rem .75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .stack thead th { font-family: var(--font-display); color: var(--ink); font-weight: 600; font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; }
+    .stack td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; }
+    .stack td:nth-child(2) { font-weight: 600; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); background: #fff; }
+    .deliverables a { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-radius: var(--r); border: 1px solid var(--line); background: #fff; text-decoration: none; color: var(--ink); font-family: var(--font-display); font-weight: 600; }
+    .deliverables a:hover { border-color: var(--ink); background: var(--lav-50); }
+    .deliverables span { font-family: var(--font-body); font-weight: 400; color: var(--muted); font-size: .88rem; display: block; }
+    .deliverables svg { width: 20px; height: 20px; flex: none; }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="eyebrow">Redesign concept · November 2026</p>
+        <h1>Pillar Sports Academy: redesign overview</h1>
+        <p class="lead">A mobile-first refresh of pillarsportsacademy.com that keeps the logo, domain, content and EZFacility registration, and makes it far easier for parents to find a program and register.</p>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- Deliverables index -->
+      <section class="doc-section" aria-labelledby="d-title">
+        <h2 id="d-title">What's in this concept</h2>
+        <div class="grid grid-3 deliverables" id="deliverables"></div>
+      </section>
+
+      <!-- 1. AUDIT -->
+      <section class="doc-section" id="audit" aria-labelledby="audit-title">
+        <span class="num">01</span>
+        <h2 id="audit-title">Audit of the current site</h2>
+        <p class="lead">Reviewed: pillarsportsacademy.com (home, hockey, baseball, softball, team info and staff pages) and pillarvolleyball.com/programs. The content is solid. The problems are structure, freshness and clarity.</p>
+        <div class="audit" id="audit-list"></div>
+      </section>
+
+      <!-- 2. SITEMAP -->
+      <section class="doc-section" id="sitemap" aria-labelledby="sm-title">
+        <span class="num">02</span>
+        <h2 id="sm-title">Sitemap & navigation</h2>
+        <p class="lead">The site is organized <em>sport-first</em>. A baseball parent picks Baseball once and only sees baseball: its programs, teams, pricing, coaches and contact on one page. The site remembers that choice, so Schedule and Programs open on baseball too. All-sports views stay for multi-sport families and staff.</p>
+        <div class="grid grid-2" style="align-items:start;margin-top:2rem">
+          <div>
+            <h3>Sitemap</h3>
+            <ul class="tree">
+              <li><span class="node root">Home: pick your sport <code>/</code></span>
+                <ul>
+                  <li><span class="node">Hockey hub <code>/hockey</code></span>
+                    <ul>
+                      <li><span class="node">Programs · Teams · Coaches · FAQ · Contact <code>#sections</code></span></li>
+                    </ul>
+                  </li>
+                  <li><span class="node">Baseball hub <code>/baseball</code></span>
+                    <ul>
+                      <li><span class="node">Programs · Teams & pricing · Age-group checker · Coaches · FAQ · Contact</span></li>
+                    </ul>
+                  </li>
+                  <li><span class="node">Softball hub <code>/softball</code></span>
+                    <ul>
+                      <li><span class="node">Same layout as baseball</span></li>
+                    </ul>
+                  </li>
+                  <li><span class="node">Volleyball <code>/volleyball</code></span></li>
+                  <li><span class="node">Schedule <code>/schedule</code> (opens on your sport)</span></li>
+                  <li><span class="node">All programs <code>/programs</code> (opens on your sport)</span></li>
+                  <li><span class="node">Register <code>/register</code>: steps · all teams · FAQ · EZFacility ↗</span></li>
+                  <li><span class="node">Coaches <code>/coaches</code></span></li>
+                  <li><span class="node">Contact <code>/contact</code></span></li>
+                  <li><span class="node later">About & success stories (phase 2)</span></li>
+                  <li><span class="node ext">Footer: Performance & Fitness ↗ · Spirit wear ↗ · Social</span></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="stack">
+            <h3>Navigation</h3>
+            <p class="note" style="margin-bottom:.4rem">Desktop header</p>
+            <div class="nav-mock"><div class="bar"><b>◉ Pillar Sports</b><span>● Hockey</span><span>● Baseball</span><span>● Softball</span><span>● Volleyball ↗</span><span style="color:var(--muted)">|</span><span>Schedule</span><span>Coaches</span><span>Contact</span><span class="pill">Register</span></div></div>
+            <p class="note" style="margin:1.25rem 0 .4rem">On a sport hub: sticky section menu under the header</p>
+            <div class="nav-mock"><div class="bar"><span>Programs</span><span>Teams</span><span>Coaches</span><span>FAQ</span><span>Contact</span><span class="pill" style="margin-left:auto">Register</span></div></div>
+            <p class="note" style="margin:1.25rem 0 .4rem">Mobile header + full-screen menu</p>
+            <div class="nav-mock">
+              <div class="bar"><b>◉ Pillar Sports</b><span class="pill">Register</span><span>☰</span></div>
+              <p class="mb-0" style="margin-top:.75rem;font-size:.88rem">Menu: “Choose your sport” as large rows (Hockey, Baseball, Softball, Volleyball ↗) · Schedule, All programs, Coaches, Contact · Register now · email</p>
+            </div>
+            <p class="note" style="margin:1.25rem 0 .4rem">Footer</p>
+            <div class="nav-mock"><p class="mb-0" style="font-size:.88rem"><strong>Sports</strong> (each opens its hub) · <strong>Academy</strong> (schedule, pricing, coaches, register, contact) · <strong>More Pillar</strong> (Performance & Fitness portal, 3 spirit-wear stores) · newsletter · Instagram · Facebook</p></div>
+            <p class="note" style="margin:1.25rem 0 .4rem">Old URL → new URL (301 redirects)</p>
+            <div class="table-wrap"><table class="stack" style="font-size:.85rem">
+              <tbody>
+                <tr><td>/hockey · /pillarhockey</td><td style="font-weight:400">/hockey (same URL, new page)</td></tr>
+                <tr><td>/baseball · /softball</td><td style="font-weight:400">/baseball · /softball (unchanged)</td></tr>
+                <tr><td>/baseballteaminfo · /softballteaminfo</td><td style="font-weight:400">/baseball#teams · /softball#teams</td></tr>
+                <tr><td>/baseballstaff · /softballstaff</td><td style="font-weight:400">/baseball#coaches · /softball#coaches</td></tr>
+                <tr><td>pillarvolleyball.com · /programs</td><td style="font-weight:400">/volleyball · /volleyball#programs</td></tr>
+                <tr><td>pillarvolleyball.com /teams · /teaminfo · /tryouts-open-gyms</td><td style="font-weight:400">/volleyball#teams · /volleyball#tryouts</td></tr>
+                <tr><td>pillarvolleyball.com /about · /adultleagues · /contact</td><td style="font-weight:400">/volleyball#coaches · /volleyball#programs · /contact</td></tr>
+              </tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ROADMAP -->
+      <section class="doc-section" id="roadmap" aria-labelledby="rm-title">
+        <span class="num">03</span>
+        <h2 id="rm-title">Feature roadmap</h2>
+        <p class="lead">Phase 1 launches the redesign with existing content and integrations. Later phases add the marketing engine.</p>
+        <div class="grid grid-3" style="margin-top:2rem" id="phases"></div>
+      </section>
+
+      <!-- 4. TECH -->
+      <section class="doc-section" id="stack" aria-labelledby="ts-title">
+        <span class="num">04</span>
+        <h2 id="ts-title">Recommended tech stack</h2>
+        <p class="lead"><strong>Astro + a simple Git-based CMS, hosted on Netlify,</strong> with EZFacility kept for registration and payments. It's fast, cheap to run, and the owner or staff can update dates and programs from a web form without touching code.</p>
+        <div class="table-wrap" style="margin-top:1.5rem"><table class="stack">
+          <thead><tr><th>Layer</th><th>Pick</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Framework</td><td>Astro (static output)</td><td>Ships plain HTML/CSS by default, so pages load fast on phones. This prototype's HTML, CSS and program data port across almost 1:1; only the program finder needs JavaScript.</td></tr>
+            <tr><td>Content editing</td><td>Pages CMS (free; Decap CMS as fallback)</td><td>Gives staff a simple web form for programs, dates, prices and coaches. Content is stored as files in the repo, with no database to maintain. Each edit rebuilds the site automatically.</td></tr>
+            <tr><td>Hosting</td><td>Netlify (free starter plan)</td><td>Global CDN, automatic HTTPS, preview links for the owner, built-in form handling for contact and newsletter, and redirect rules for old Squarespace URLs.</td></tr>
+            <tr><td>Registration & payments</td><td>EZFacility (keep)</td><td>No change for staff or families. Each session button deep-links to its existing EZFacility group.</td></tr>
+            <tr><td>Email / newsletter</td><td>Mailchimp or Kit (free tier)</td><td>Replaces Squarespace email signup; powers “Notify me” alerts by sport. Export and import the current subscriber list.</td></tr>
+            <tr><td>Analytics</td><td>Plausible (or GA4)</td><td>Privacy-friendly. Tracks clicks out to EZFacility as registrations so you can see which programs and pages convert.</td></tr>
+            <tr><td>Domain</td><td>pillarsportsacademy.com (keep)</td><td>Point DNS to Netlify at launch; 301 redirects preserve search rankings and old links.</td></tr>
+            <tr><td>Images</td><td>Astro Image (AVIF/WebP)</td><td>Auto-resized, lazy-loaded photos. Redraw the logo as SVG for crisp display on phones.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="grid grid-2" style="margin-top:1.5rem">
+          <div class="card"><h3>Running cost</h3><p class="muted mb-0">Roughly $0–20/month (analytics is the main cost) once the Squarespace subscription is retired, plus the domain renewal you already pay. EZFacility fees are unchanged.</p></div>
+          <div class="card"><h3>Alternative if no developer will maintain it</h3><p class="muted mb-0">Webflow (CMS plan) supports the same design, and staff can edit pages visually. It costs more per month and filtering needs a plugin, but nobody touches code.</p></div>
+        </div>
+      </section>
+
+      <!-- 5. CONFIRM -->
+      <section class="doc-section" id="confirm" aria-labelledby="cf-title">
+        <span class="num">05</span>
+        <h2 id="cf-title">Content to confirm with Pillar</h2>
+        <p class="muted">The prototype uses only existing site content. These gaps were filled with clearly marked placeholders. <a href="programs.html?review">View the finder with placeholder flags shown</a>.</p>
+        <div class="grid grid-2">
+          <ul class="muted" style="padding-left:1.1rem;margin:0">
+            <li>Age ranges and levels for hockey clinics, lessons, academy and teams</li>
+            <li>Ages for Learn to Volley and Development Training</li>
+            <li>Prices for camps, clinics and lessons (currently only shown inside EZFacility)</li>
+            <li>Street address, main phone number and hours</li>
+          </ul>
+          <ul class="muted" style="padding-left:1.1rem;margin:0">
+            <li>Which photo belongs to which baseball coach (matched by page order)</li>
+            <li>Headshots and bios for Marnie & Maddie Hartman (currently image flyers)</li>
+            <li>Hockey coaching staff</li>
+            <li>Action photography and video for the hero (biggest visual upgrade)</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/site.js?v=2"></script>
+  <script>
+  (() => {
+    const pages = [
+      ['index.html', 'Homepage', 'Pick your sport, upcoming, pathway'],
+      ['baseball.html', 'Baseball hub', 'Programs, teams, coaches, FAQ in one place'],
+      ['hockey.html', 'Hockey hub', 'Clinics, lessons, academy, teams'],
+      ['softball.html', 'Softball hub', 'Travel teams, camps, age checker'],
+      ['volleyball.html', 'Volleyball hub', 'Club teams, tryouts, juniors, adult leagues'],
+      ['programs.html', 'All programs', 'Cross-sport finder, opens on your sport'],
+      ['schedule.html', 'Schedule', 'Agenda with add-to-calendar'],
+      ['coaches.html', 'Coaches', 'Filterable staff with bios'],
+      ['register.html', 'Registration', 'Steps, team pricing, age calculator'],
+      ['contact.html', 'Contact', 'Inquiry form & department contacts'],
+      ['concept-a/index.html', 'Concept A (archived)', 'The earlier light design, kept for reference'],
+      ['concept-a/style-guide.html', 'Concept A style guide', 'Archived: colors, type, buttons, cards'],
+      ['#audit', 'Audit', 'Current site problems & fixes'],
+      ['#roadmap', 'Roadmap & stack', 'Phase 1 vs later · tech picks'],
+    ];
+    document.getElementById('deliverables').innerHTML = pages.map(([h, t, d]) => `<a href="${h}"><div>${t}<span>${d}</span></div>${icon('arrow')}</a>`).join('');
+
+    const audit = [
+      ['The homepage doesn\'t answer “what can my kid do, when, and for how much?”',
+       '“Upcoming Programs – Quick Links” is a grid of identical lavender buttons that mixes sport pages with single events. No ages, times, prices or spots left until you leave for EZFacility.',
+       'A hero program finder (sport + age) and “Coming up” cards that show date, ages, level, format and status, with one tap to register.'],
+      ['Expired and placeholder content stays up',
+       'Election Day camps (Nov 3) and October hockey clinics are still promoted after they ran. Several volleyball programs say “More info coming soon.”',
+       'Date-driven content: past sessions drop off automatically, and programs without dates show “New dates soon” with a Notify me button that captures the lead.'],
+      ['Key info is buried in per-sport folders',
+       'Hockey, Baseball and Softball each repeat Info / Team Info / Coaching Staff. Team pricing is two or three clicks deep, and the nav lists sports rather than tasks.',
+       'One hub page per sport with a sticky section menu (Programs, Teams, Coaches, FAQ, Contact), so team pricing is one tap away. Sports lead the header, Register is always visible, and the current sport URLs keep working.'],
+      ['Details are inconsistent or missing',
+       'Hockey lists no ages or prices; baseball does. There\'s no street address or main phone number, and contact is a handful of mailto links.',
+       'Every program card uses the same fields. A contact page lists who to email for each sport, plus a location and a form that routes inquiries.'],
+      ['The registration handoff has no context',
+       'Dozens of raw EZFacility links labeled only “October 7: Skating.” Parents can\'t tell what happens next or that they\'re leaving the site.',
+       'Session buttons show date, time and group, with an external-link cue. A three-step “how registration works” explainer and an age-group calculator remove guesswork.'],
+      ['Accessibility and readability gaps',
+       'White text on lavender buttons is ≈3.8:1 and lavender headings on off-white are ≈3.4:1, both below the AA 4.5:1 minimum for normal text. Softball coach bios are images of text. Fonts are mixed (PT Serif buttons, Poppins headings).',
+       'A tested palette (purple buttons 17:1, accessible lavender 6.6:1), real-text bios, one type system, 48px touch targets, visible focus, skip link and reduced-motion support.'],
+      ['The brand is fragmented and the logo is low-res',
+       'Three domains (academy, volleyball, fitness portal) plus three spirit-wear stores, each looking different. The logo is a 176px PNG that blurs on phones.',
+       'One design system that volleyball can adopt later, a footer hub linking every Pillar property, and an SVG logo.'],
+      ['Thin social proof',
+       'One testimonial (on the volleyball site), coach bios split across sports, and almost no action photography.',
+       'Coaches and a testimonial on the homepage, plus a player pathway that shows progression. Phase 2 adds a photo shoot and athlete success stories.'],
+    ];
+    document.getElementById('audit-list').innerHTML = audit.map(([h, p, f], i) => `
+      <article class="audit-item reveal"><h3>${i + 1}. ${h}</h3>
+        <div class="prob"><span class="lbl">Today</span><p>${p}</p></div>
+        <div class="fix"><span class="lbl">Redesign</span><p>${f}</p></div></article>`).join('');
+
+    const ck = icon('check');
+    const phases = [
+      ['Phase 1', 'Launch', 'p1', ['New design system, homepage & 5 key pages', 'Sport hubs: Hockey, Baseball, Softball, Volleyball', 'Remembered sport across Schedule & Programs', 'Program finder: sport, age, level, type, date, shareable URLs', 'Schedule agenda with add-to-calendar', 'Session-level deep links into EZFacility', 'Teams & pricing, age calculator, FAQ', 'Coaches page with real-text bios', 'Contact form routed by sport + newsletter signup', 'Mobile menu, sticky Register, WCAG AA', 'SEO basics, Event schema, 301 redirects (incl. pillarvolleyball.com)', 'Analytics with registration-click tracking', 'CMS so staff can post new dates']],
+      ['Phase 2', 'Grow', '', ['“Notify me” → automated new-date emails by sport', 'Per-sport ad & social landing campaigns', 'Pro photo & video shoot; video hero', 'Athlete success stories & testimonials', 'Tryout / evaluation lead form → simple CRM', 'Google Business Profile & reviews', 'About / our story page']],
+      ['Phase 3', 'Scale', '', ['Live “spots left” if EZFacility data access allows', 'Unified spirit-wear storefront', 'SMS reminders for upcoming sessions', 'Parent FAQ / policies hub']],
+    ];
+    document.getElementById('phases').innerHTML = phases.map(([n, t, c, items]) => `
+      <div class="card phase ${c}"><h3>${n}<span class="tag ${c ? 'tag-volleyball' : 'tag-neutral'}">${t}</span></h3>
+      <ul>${items.map(i => `<li>${ck}<span>${i}</span></li>`).join('')}</ul></div>`).join('');
+  })();
+  </script>
+</body>
+</html>

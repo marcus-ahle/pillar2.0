@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Coaches | Pillar Sports Academy</title>
+  <meta name="description" content="Meet the Pillar Sports coaching staff: experienced mentors in baseball, softball, hockey and volleyball.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Coaches</nav>
+        <h1>Coaches who mentor</h1>
+        <p class="lead">Our coaches invest in each athlete's journey, putting long-term development ahead of short-term wins in every practice, tournament and team interaction.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="chip-row" id="coach-chips" role="group" aria-label="Filter coaches by sport" style="margin-bottom:2rem"></div>
+        <div class="grid grid-4" id="coaches"></div>
+
+        <div class="grid grid-2" style="margin-top:3rem">
+          <div class="card" style="display:flex;gap:1rem;align-items:flex-start">
+            <div class="icon-circle" style="margin:0;flex:none;color:var(--hockey);background:#e3f1fb" id="hk-icon"></div>
+            <div><h3 style="margin-bottom:.25rem">Hockey staff</h3><p class="muted">Staff profiles for Pillar Hockey Academy are coming soon. For private lessons or academy training, email the hockey team.</p><a class="link-arrow" href="mailto:hockey@pillarfitness.com">hockey@pillarfitness.com</a></div>
+          </div>
+          <div class="card" style="display:flex;gap:1rem;align-items:flex-start">
+            <div class="icon-circle" style="margin:0;flex:none" id="vb-icon"></div>
+            <div><h3 style="margin-bottom:.25rem">Volleyball staff</h3><p class="muted">Pillar Volleyball coaches are profiled on the volleyball site alongside club teams and tryouts.</p><a class="link-arrow" href="https://www.pillarvolleyball.com/" target="_blank" rel="noopener">Visit pillarvolleyball.com</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/site.js"></script>
+  <script>
+  (() => {
+    document.getElementById('hk-icon').innerHTML = icon('hockey');
+    document.getElementById('vb-icon').innerHTML = icon('volleyball');
+    const sports = [...new Set(COACHES.map(c => c.sport))];
+    let active = new URLSearchParams(location.search).get('sport') || '';
+    const chips = document.getElementById('coach-chips');
+    chips.innerHTML = `<button type="button" class="chip" data-val="">All coaches</button>` +
+      sports.map(k => `<button type="button" class="chip" data-val="${k}"><span class="dot" style="background:${SPORTS[k].color}"></span>${SPORTS[k].name}</button>`).join('');
+    chips.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; active = b.dataset.val; render(); });
+    function render() {
+      chips.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.val === active));
+      document.getElementById('coaches').innerHTML = COACHES.filter(c => !active || c.sport === active).map(c => renderCoachCard(c)).join('');
+    }
+    render();
+  })();
+  </script>
+</body>
+</html>

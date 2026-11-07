@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Schedule | Pillar Sports Academy</title>
+  <meta name="description" content="Upcoming camps, clinics, evaluations and tournaments at Pillar Sports Academy in Rossford, Ohio.">
+  <meta name="theme-color" content="#211032">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=2">
+</head>
+<body>
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="crumb"><a href="index.html">Home</a> / Schedule</p>
+        <h1 class="h-xl">What's <span class="acc">up next</span></h1>
+        <p class="lead">Every dated camp, clinic, evaluation and tournament in one list. Register in one tap, or add it straight to your calendar.</p>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0">
+      <div class="wrap">
+        <div class="results-bar" style="align-items:flex-start">
+          <div class="chips" id="sport-chips" role="group" aria-label="Filter by sport" style="margin:0"></div>
+          <label class="toggle"><input type="checkbox" id="show-past"> Show past sessions</label>
+        </div>
+        <p class="count" id="sched-count" aria-live="polite" style="margin:1rem 0 2rem"></p>
+        <div id="sport-scope"></div>
+        <div id="agenda"></div>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0" aria-labelledby="ongoing-title">
+      <div class="wrap">
+        <div class="rail-head">
+          <div><p class="kicker">Anytime</p><h2 class="h-xl" id="ongoing-title">Year-<span class="outline">round</span></h2></div>
+          <p class="muted" style="max-width:44ch;margin:0">No fixed date: book a lesson, ask about training, or reach out about teams any time.</p>
+        </div>
+        <div class="ticket-grid" id="ongoing"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js?v=2"></script>
+  <script src="assets/js/site.js?v=2"></script>
+  <script src="assets/js/chrome.js?v=2"></script>
+  <script>
+  (() => {
+    const params = new URLSearchParams(location.search);
+    const active = new Set((params.get('sport') || '').split(',').filter(Boolean));
+    const remembered = getSport();
+    if (remembered && !params.has('sport')) active.add(remembered); // open on the sport they last viewed
+    let showPast = false;
+
+    const sessions = PROGRAMS.flatMap(p => (p.sessions || []).map(s => ({ ...s, p, d: parseDate(s.date) })))
+      .sort((a, b) => a.d - b.d || (a.time || '').localeCompare(b.time || ''));
+
+    const chips = document.getElementById('sport-chips');
+    chips.innerHTML = `<button type="button" data-val="" aria-pressed="false">All sports</button>` +
+      Object.entries(SPORTS).map(([k, s]) => `<button type="button" data-val="${k}" aria-pressed="false">${s.name}</button>`).join('');
+    chips.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const v = b.dataset.val;
+      if (!v) active.clear(); else active.has(v) ? active.delete(v) : active.add(v);
+      render();
+    });
+    document.getElementById('show-past').addEventListener('change', e => { showPast = e.target.checked; render(); });
+
+    // ---- Add to calendar (.ics) ----
+    function parseRange(time) {
+      if (!time) return null;
+      const [a, b] = time.split('–').map(s => s.trim());
+      const rx = /(\d{1,2}):(\d{2})\s*(AM|PM)?/i;
+      const ma = a.match(rx), mb = b && b.match(rx); if (!ma || !mb) return null;
+      const to24 = (h, mer) => { h = +h; if (mer.toUpperCase() === 'PM' && h !== 12) h += 12; if (mer.toUpperCase() === 'AM' && h === 12) h = 0; return h; };
+      const merB = mb[3] || 'AM', merA = ma[3] || merB;
+      return [[to24(ma[1], merA), +ma[2]], [to24(mb[1], merB), +mb[2]]];
+    }
+    const pad = n => String(n).padStart(2, '0');
+    const ymd = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+    function ics(s) {
+      const r = parseRange(s.time), day = ymd(s.d);
+      const next = new Date(s.d); next.setDate(next.getDate() + 1);
+      const when = r ? `DTSTART:${day}T${pad(r[0][0])}${pad(r[0][1])}00\r\nDTEND:${day}T${pad(r[1][0])}${pad(r[1][1])}00`
+                     : `DTSTART;VALUE=DATE:${day}\r\nDTEND;VALUE=DATE:${ymd(next)}`;
+      const body = [
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Pillar Sports Academy//Schedule//EN', 'BEGIN:VEVENT',
+        `UID:${s.p.id}-${day}-${(s.label || '').replace(/\W/g, '')}@pillarsportsacademy.com`,
+        `DTSTAMP:${ymd(new Date())}T000000Z`, when,
+        `SUMMARY:${SPORTS[s.p.sport].name}: ${s.p.title}${s.label ? ' (' + s.label + ')' : ''}`,
+        'LOCATION:Pillar Sports\\, Rossford\\, OH',
+        `DESCRIPTION:${s.p.summary.replace(/,/g, '\\,')}${s.url ? '\\n\\nRegister: ' + s.url : ''}`,
+        'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(body);
+    }
+
+    function row(s) {
+      const past = s.d < TODAY, sp = SPORTS[s.p.sport];
+      const days = daysFromToday(s.d), hot = !past && !s.soldOut && days <= 14;
+      const reg = past ? '<span class="t-status">Ended</span>'
+        : s.soldOut ? `<span class="t-status">Sold out</span><a class="btn btn-ghost btn-sm" href="contact.html?topic=notify&program=${s.p.id}">${icon('bell')} Notify me</a>`
+        : `<a class="btn btn-acc btn-sm" href="${s.url}"${linkAttrs(s.url)} aria-label="Register for ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} (opens registration)">Register ${icon('ext')}</a>`;
+      const cal = past ? '' : `<a class="btn btn-ghost btn-sm" href="${ics(s)}" download="pillar-${s.p.id}-${s.date}.ics" aria-label="Add ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} to calendar">${icon('calendar')} Add to calendar</a>`;
+      return `<article class="row${past ? ' past' : ''}">
+        <div class="d" aria-hidden="true"><span class="mono">${fmt(s.d, { weekday: 'short' })}</span><span class="day">${s.d.getDate()}</span></div>
+        <div>
+          <span class="lbl">${sp.name} · ${s.p.type}${hot ? ` · ${days <= 0 ? 'Today' : `In ${days} day${days === 1 ? '' : 's'}`}` : ''}</span>
+          <h3>${esc(s.p.title)}${s.label && s.label !== s.p.title ? ` <span>· ${esc(s.label)}</span>` : ''}</h3>
+          <div class="meta"><span>${fmt(s.d, { weekday: 'long', month: 'long', day: 'numeric' })}</span>${s.time ? `<span>${s.time}</span>` : ''}<span>${esc(s.p.ageLabel)}</span>${s.p.capacity ? `<span>${esc(s.p.capacity)}</span>` : ''}</div>
+        </div>
+        <div class="acts">${cal}${reg}</div>
+      </article>`;
+    }
+
+    function render() {
+      chips.querySelectorAll('button').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.val ? active.has(c.dataset.val) : active.size === 0)));
+      if (active.size === 1) setSport([...active][0]); else if (!active.size) setSport(null);
+      const scopeEl = document.getElementById('sport-scope');
+      scopeEl.innerHTML = scopeBanner(active.size === 1 ? [...active][0] : null);
+      const allBtn = scopeEl.querySelector('[data-all-sports]');
+      if (allBtn) allBtn.addEventListener('click', () => { active.clear(); render(); });
+
+      const list = sessions.filter(s => (!active.size || active.has(s.p.sport)) && (showPast || s.d >= TODAY));
+      const upcomingN = list.filter(s => s.d >= TODAY).length;
+      document.getElementById('sched-count').textContent = `${upcomingN} upcoming session${upcomingN === 1 ? '' : 's'}${showPast ? ` · ${list.length - upcomingN} past` : ''}`;
+
+      const byMonth = {};
+      list.forEach(s => { const k = fmt(s.d, { month: 'long', year: 'numeric' }); (byMonth[k] = byMonth[k] || []).push(s); });
+      document.getElementById('agenda').innerHTML = Object.keys(byMonth).length
+        ? Object.entries(byMonth).map(([month, items]) => `
+          <section class="month" aria-label="${month}">
+            <h2>${month.split(' ')[0]} <span>${month.split(' ')[1]} · ${items.length} session${items.length === 1 ? '' : 's'}</span></h2>
+            ${items.map(row).join('')}
+          </section>`).join('')
+        : `<div class="empty"><h3>Nothing on the calendar yet</h3><p>New dates post here first. <a href="contact.html?topic=notify">Get notified</a> or check year-round programs below.</p></div>`;
+
+      const ongoing = PROGRAMS.filter(p => p.ongoing && !p.sessions && (!active.size || active.has(p.sport)));
+      document.getElementById('ongoing').innerHTML = ongoing.map(p => ticket(p)).join('');
+      const q = new URLSearchParams(); if (active.size) q.set('sport', [...active].join(','));
+      if (params.get('today')) q.set('today', params.get('today'));
+      history.replaceState(null, '', q.toString() ? '?' + q : location.pathname);
+    }
+    render();
+  })();
+  </script>
+</body>
+</html>

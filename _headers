@@ -1,0 +1,4 @@
+# Netlify: keep this temporary concept site out of search engines.
+# (GitHub Pages ignores this file; the noindex meta tag in each page covers it there.)
+/*
+  X-Robots-Tag: noindex, nofollow
