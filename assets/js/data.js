@@ -340,3 +340,17 @@ const SPORT_HUBS = {
     ],
   },
 };
+
+/* Sponsors / partners. PLACEHOLDERS: the live sites list no sponsors, so these
+   names are invented. Replace with real partners (add `logo` for an image file;
+   without one, the name renders as a styled wordmark using `style` a–e). */
+const SPONSORS = [
+  { name: 'Riverbend Auto', tier: 'Pillar', style: 'a', url: '#', confirm: true },
+  { name: 'Lakeside Dental', tier: 'All-Star', style: 'b', url: '#', confirm: true },
+  { name: 'Harbor Title', tier: 'All-Star', style: 'c', url: '#', confirm: true },
+  { name: 'northwood pizza co.', tier: 'Starter', style: 'd', url: '#', confirm: true },
+  { name: 'Summit Roofing', tier: 'Starter', style: 'e', url: '#', confirm: true },
+  { name: 'Compass PT', tier: 'Starter', style: 'a', url: '#', confirm: true },
+  { name: 'Maple & Main', tier: 'Fan', style: 'b', url: '#', confirm: true },
+  { name: 'eastside cu', tier: 'Fan', style: 'd', url: '#', confirm: true },
+];

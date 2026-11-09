@@ -118,6 +118,7 @@
   const run = words.map(w => `<span>${w}</span>`).join('');
   document.getElementById('marquee').innerHTML = run + run + run + run;
 
+  partnerStrip(document.getElementById('partner-strip'));
   revealB();
   countUp();
 })();

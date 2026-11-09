@@ -162,7 +162,7 @@ function mountB() {
         <nav aria-label="Sports"><h2>Sports</h2><ul>${Object.entries(SPORTS).map(([k, s]) => `<li><a href="${bLink(k)}"${extAttr(k)}>${s.name}${s.external ? ' ↗' : ''}</a></li>`).join('')}</ul></nav>
         <nav aria-label="Academy"><h2>Academy</h2><ul>
           <li><a href="schedule.html">Schedule</a></li><li><a href="programs.html">All programs</a></li>
-          <li><a href="coaches.html">Coaches</a></li><li><a href="register.html">Register</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
+          <li><a href="coaches.html">Coaches</a></li><li><a href="register.html">Register</a></li><li><a href="contact.html">Contact</a></li><li><a href="sponsors.html">Sponsor us</a></li></ul></nav>
         <nav aria-label="More from Pillar"><h2>More Pillar</h2><ul>
           <li><a href="https://pillarfitness.ezfacility.com/OnlineRegistration" target="_blank" rel="noopener">Performance & Fitness ↗</a></li>
           <li><a href="https://www.instagram.com/pillar_perform/" target="_blank" rel="noopener">Instagram ↗</a></li>
@@ -220,3 +220,18 @@ function countUp() {
 }
 
 mountB();
+
+/* Sponsor wordmark or logo image */
+const sponsorMark = s => s.logo ? `<img src="${s.logo}" alt="${esc(s.name)}" loading="lazy">` : `<span class="wm ${s.style || 'a'}">${esc(s.name)}</span>`;
+
+/* Homepage "Proudly backed by" strip: <div id="partner-strip"></div> */
+function partnerStrip(el) {
+  if (!el || !SPONSORS.length) return;
+  const row = SPONSORS.map(s => `<span class="wm ${s.style || 'a'}">${esc(s.name)}</span>`).join('');
+  el.outerHTML = `<section class="partner-strip" aria-label="Our partners">
+    <span class="lbl">Proudly backed by</span>
+    <p class="sr-only">${SPONSORS.map(s => esc(s.name)).join(', ')}</p>
+    <div class="vp" aria-hidden="true"><div class="track">${row}${row}</div></div>
+    <a class="btn btn-ghost btn-sm" href="sponsors.html">Sponsor us ${arrowNE}</a>
+  </section>`;
+}
