@@ -35,6 +35,7 @@
     <section class="hub-hero" aria-labelledby="hub-title">
       <div class="wrap">
         <p class="crumb"><a href="index.html">Home</a> / ${sport.name}</p>
+        <p class="hub-brand" aria-hidden="true"><img src="${ASSETS.logo}" alt="" width="48" height="48">Pillar</p>
         <h1 class="hub-word${hub.photo ? ' has-photo' : ''}${sport.name.length > 8 ? ' long' : ''}" id="hub-title"${hub.photo ? ` style="background-image:linear-gradient(#7877e6,#7877e6),url('${hub.photo}')"` : ''}><span class="sr-only">Pillar </span>${sport.name}</h1>
         <div class="hub-intro">
           <div>

@@ -73,15 +73,11 @@
       <span class="meta"><span>${SPORTS[k].external ? 'Own site' : count(k) + ' programs & teams'}</span><span>${nextFor(k)}</span><span class="go">${SPORTS[k].external ? icon('ext') : arrowNE}</span></span>
     </a></li>`).join('');
 
-  // Image follows the cursor on hover (mouse only)
-  const ci = document.getElementById('cursor-img'), cs = document.getElementById('cursor-src');
+  // Hovering a sport tints the page in that sport's accent (mouse only)
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    let x = 0, y = 0, raf = null;
-    const move = () => { ci.style.left = x + 'px'; ci.style.top = y + 'px'; raf = null; };
-    document.getElementById('arena').addEventListener('pointermove', e => { x = e.clientX + 40; y = e.clientY; if (!raf) raf = requestAnimationFrame(move); });
     document.querySelectorAll('#arena a').forEach(a => {
-      a.addEventListener('pointerenter', () => { const src = STAGE[a.dataset.k].src; if (!src) return; cs.src = src; ci.classList.add('show'); root.dataset.theme = a.dataset.k; });
-      a.addEventListener('pointerleave', () => { ci.classList.remove('show'); root.dataset.theme = current; });
+      a.addEventListener('pointerenter', () => { root.dataset.theme = a.dataset.k; });
+      a.addEventListener('pointerleave', () => { root.dataset.theme = current; });
     });
   }
 

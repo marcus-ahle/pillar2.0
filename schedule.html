@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/main.css?v=2">
+  <link rel="stylesheet" href="assets/css/main.css?v=9">
 </head>
 <body>
   <main id="main">
@@ -24,10 +24,7 @@
 
     <section class="sec-sm" style="padding-top:0">
       <div class="wrap">
-        <div class="results-bar" style="align-items:flex-start">
-          <div class="chips" id="sport-chips" role="group" aria-label="Filter by sport" style="margin:0"></div>
-          <label class="toggle"><input type="checkbox" id="show-past"> Show past sessions</label>
-        </div>
+        <div class="chips" id="sport-chips" role="group" aria-label="Filter by sport" style="margin:0"></div>
         <p class="count" id="sched-count" aria-live="polite" style="margin:1rem 0 2rem"></p>
         <div id="sport-scope"></div>
         <div id="agenda"></div>
@@ -45,16 +42,15 @@
     </section>
   </main>
 
-  <script src="assets/js/data.js?v=2"></script>
-  <script src="assets/js/site.js?v=2"></script>
-  <script src="assets/js/chrome.js?v=2"></script>
+  <script src="assets/js/data.js?v=9"></script>
+  <script src="assets/js/site.js?v=9"></script>
+  <script src="assets/js/chrome.js?v=9"></script>
   <script>
   (() => {
     const params = new URLSearchParams(location.search);
     const active = new Set((params.get('sport') || '').split(',').filter(Boolean));
     const remembered = getSport();
     if (remembered && !params.has('sport')) active.add(remembered); // open on the sport they last viewed
-    let showPast = false;
 
     const sessions = PROGRAMS.flatMap(p => (p.sessions || []).map(s => ({ ...s, p, d: parseDate(s.date) })))
       .sort((a, b) => a.d - b.d || (a.time || '').localeCompare(b.time || ''));
@@ -68,7 +64,6 @@
       if (!v) active.clear(); else active.has(v) ? active.delete(v) : active.add(v);
       render();
     });
-    document.getElementById('show-past').addEventListener('change', e => { showPast = e.target.checked; render(); });
 
     // ---- Add to calendar (.ics) ----
     function parseRange(time) {
@@ -99,13 +94,12 @@
     }
 
     function row(s) {
-      const past = s.d < TODAY, sp = SPORTS[s.p.sport];
-      const days = daysFromToday(s.d), hot = !past && !s.soldOut && days <= 14;
-      const reg = past ? '<span class="t-status">Ended</span>'
-        : s.soldOut ? `<span class="t-status">Sold out</span><a class="btn btn-ghost btn-sm" href="contact.html?topic=notify&program=${s.p.id}">${icon('bell')} Notify me</a>`
+      const sp = SPORTS[s.p.sport];
+      const days = daysFromToday(s.d), hot = !s.soldOut && days <= 14;
+      const reg = s.soldOut ? `<span class="t-status">Sold out</span><a class="btn btn-ghost btn-sm" href="contact.html?topic=notify&program=${s.p.id}">${icon('bell')} Notify me</a>`
         : `<a class="btn btn-acc btn-sm" href="${s.url}"${linkAttrs(s.url)} aria-label="Register for ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} (opens registration)">Register ${icon('ext')}</a>`;
-      const cal = past ? '' : `<a class="btn btn-ghost btn-sm" href="${ics(s)}" download="pillar-${s.p.id}-${s.date}.ics" aria-label="Add ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} to calendar">${icon('calendar')} Add to calendar</a>`;
-      return `<article class="row${past ? ' past' : ''}">
+      const cal = `<a class="btn btn-ghost btn-sm" href="${ics(s)}" download="pillar-${s.p.id}-${s.date}.ics" aria-label="Add ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} to calendar">${icon('calendar')} Add to calendar</a>`;
+      return `<article class="row">
         <div class="d" aria-hidden="true"><span class="mono">${fmt(s.d, { weekday: 'short' })}</span><span class="day">${s.d.getDate()}</span></div>
         <div>
           <span class="lbl">${sp.name} · ${s.p.type}${hot ? ` · ${days <= 0 ? 'Today' : `In ${days} day${days === 1 ? '' : 's'}`}` : ''}</span>
@@ -124,9 +118,8 @@
       const allBtn = scopeEl.querySelector('[data-all-sports]');
       if (allBtn) allBtn.addEventListener('click', () => { active.clear(); render(); });
 
-      const list = sessions.filter(s => (!active.size || active.has(s.p.sport)) && (showPast || s.d >= TODAY));
-      const upcomingN = list.filter(s => s.d >= TODAY).length;
-      document.getElementById('sched-count').textContent = `${upcomingN} upcoming session${upcomingN === 1 ? '' : 's'}${showPast ? ` · ${list.length - upcomingN} past` : ''}`;
+      const list = sessions.filter(s => (!active.size || active.has(s.p.sport)) && s.d >= TODAY);
+      document.getElementById('sched-count').textContent = `${list.length} upcoming session${list.length === 1 ? '' : 's'}`;
 
       const byMonth = {};
       list.forEach(s => { const k = fmt(s.d, { month: 'long', year: 'numeric' }); (byMonth[k] = byMonth[k] || []).push(s); });
