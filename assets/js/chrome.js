@@ -122,7 +122,15 @@ function teamPanel(p) {
 const scopeBanner = k => k && HUBS.includes(k)
   ? `<div class="scope"><p>Showing <strong>${SPORTS[k].name}</strong> only.</p><a href="${k}.html">${SPORTS[k].name} home</a><button type="button" data-all-sports>Show all sports</button></div>` : '';
 
+// Pages are built by script after load, so the browser's own scroll restore on refresh
+// lands in the wrong place. Always start at the top unless the URL points to a section.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (!location.hash) window.scrollTo(0, 0);
+
 function mountB() {
+  requestAnimationFrame(() => { const nav = document.querySelector('.nav'); if (!nav) return;
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true }); });
   const page = location.pathname.split('/').pop() || 'index.html';
   const navSports = Object.entries(SPORTS).map(([k, s]) =>
     `<li><a href="${bLink(k)}"${extAttr(k)}${page === k + '.html' ? ' aria-current="page"' : ''} style="--c:var(--${k})"><span class="dot" aria-hidden="true"></span>${s.name}${s.external ? icon('ext') + '<span class="sr-only"> (opens in a new tab)</span>' : ''}</a></li>`).join('');
@@ -130,7 +138,7 @@ function mountB() {
   document.body.insertAdjacentHTML('afterbegin', `
   <a class="skip" href="#main">Skip to content</a>
   <header class="nav" aria-label="Site">
-    <a class="nav-brand" href="index.html"><img src="${ASSETS.logo}" alt="" width="40" height="40"><span>Pillar Sports</span><span class="sr-only"> home</span></a>
+    <a class="nav-brand" href="index.html"><img src="${ASSETS.logo}" alt="" width="52" height="52"><span>Pillar<span class="nav-sports"> Sports</span><span class="nav-academy"> Academy</span></span><span class="sr-only"> home</span></a>
     <nav aria-label="Main"><ul class="nav-links">${navSports}<li><a href="schedule.html"${page === 'schedule.html' ? ' aria-current="page"' : ''}>Schedule</a></li></ul></nav>
     <button class="icon-btn" type="button" id="motion" aria-pressed="${paused}" aria-label="Pause animations" title="Pause animations">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button>
