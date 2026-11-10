@@ -229,10 +229,21 @@ function countUp() {
 
 mountB();
 
+/* Homepage hero strip: 'sponsors' or 'events'. Saved per browser from admin.html;
+   ?strip=events|sponsors on the homepage URL overrides it for that visit. */
+const HERO_STRIP_KEY = 'pillar.heroStrip';
+const HERO_STRIP_DEFAULT = 'sponsors';
+function getHeroStrip() {
+  const q = new URLSearchParams(location.search).get('strip');
+  if (q === 'events' || q === 'sponsors') return q;
+  try { const v = localStorage.getItem(HERO_STRIP_KEY); return v === 'events' || v === 'sponsors' ? v : HERO_STRIP_DEFAULT; } catch { return HERO_STRIP_DEFAULT; }
+}
+function setHeroStrip(v) { try { localStorage.setItem(HERO_STRIP_KEY, v); } catch {} }
+
 /* Sponsor wordmark or logo image */
 const sponsorMark = s => s.logo ? `<img src="${s.logo}" alt="${esc(s.name)}" loading="lazy">` : `<span class="wm ${s.style || 'a'}">${esc(s.name)}</span>`;
 
-/* Homepage "Proudly backed by" strip: <div id="partner-strip"></div> */
+/* "Proudly backed by" strip; replaces the element passed in */
 function partnerStrip(el) {
   if (!el || !SPONSORS.length) return;
   const row = SPONSORS.map(s => `<span class="wm ${s.style || 'a'}">${esc(s.name)}</span>`).join('');

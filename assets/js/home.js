@@ -55,16 +55,20 @@
   // Only cycle while the hero is on screen, so the page doesn't recolor under a reader
   new IntersectionObserver(([e]) => e.isIntersecting ? start() : clearInterval(timer), { threshold: .25 }).observe(document.querySelector('.hero'));
 
-  // ----- ticker: real upcoming sessions -----
+  // ----- upcoming sessions -----
   const sessions = PROGRAMS.flatMap(p => upcomingSessions(p).map(s => ({ p, s, d: parseDate(s.date) }))).sort((a, b) => a.d - b.d);
-  const items = sessions.slice(0, 8).map(({ p, s, d }) =>
-    `<span style="--c:var(--${p.sport})"><i class="live"></i><b>${fmt(d, { weekday: 'short', month: 'short', day: 'numeric' })}</b>${SPORTS[p.sport].name} · ${esc(p.title)}${s.label && s.label !== p.title ? ' · ' + esc(s.label) : ''}${s.soldOut ? ' · <b>Sold out</b>' : ''}</span>`)
-    .concat(PROGRAMS.filter(p => p.type === 'Team' && p.price).map(p =>
-      `<span style="--c:var(--${p.sport})"><i class="live"></i><b>Now forming</b>${SPORTS[p.sport].name} · ${esc(p.title)} · ${p.price}</span>`));
-  const tick = document.getElementById('ticker');
-  tick.innerHTML = `<div>${items.join('')}</div><div>${items.join('')}</div>`;
-  tick.parentElement.setAttribute('aria-hidden', 'true'); // decorative repeat of the ticket rail below
-  tick.parentElement.removeAttribute('aria-label');
+
+  // ----- hero bottom strip: events ticker or sponsor strip (set on admin.html) -----
+  const slot = document.getElementById('hero-strip');
+  if (getHeroStrip() === 'sponsors' && SPONSORS.length) partnerStrip(slot);
+  else {
+    const items = sessions.slice(0, 8).map(({ p, s, d }) =>
+      `<span style="--c:var(--${p.sport})"><i class="live"></i><b>${fmt(d, { weekday: 'short', month: 'short', day: 'numeric' })}</b>${SPORTS[p.sport].name} · ${esc(p.title)}${s.label && s.label !== p.title ? ' · ' + esc(s.label) : ''}${s.soldOut ? ' · <b>Sold out</b>' : ''}</span>`)
+      .concat(PROGRAMS.filter(p => p.type === 'Team' && p.price).map(p =>
+        `<span style="--c:var(--${p.sport})"><i class="live"></i><b>Now forming</b>${SPORTS[p.sport].name} · ${esc(p.title)} · ${p.price}</span>`));
+    // aria-hidden: a decorative repeat of the ticket rail below
+    slot.outerHTML = `<div class="ticker" aria-hidden="true"><div class="ticker-track"><div>${items.join('')}</div><div>${items.join('')}</div></div></div>`;
+  }
 
   // ----- arena list -----
   const nextFor = k => { const s = sessions.find(x => x.p.sport === k && !x.s.soldOut); return s ? 'Next: ' + fmt(s.d, { month: 'short', day: 'numeric' }) : 'Year-round training'; };
@@ -114,7 +118,6 @@
   const run = words.map(w => `<span>${w}</span>`).join('');
   document.getElementById('marquee').innerHTML = run + run + run + run;
 
-  partnerStrip(document.getElementById('partner-strip'));
   revealB();
   countUp();
 })();

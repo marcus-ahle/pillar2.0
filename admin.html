@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Site settings | Pillar Sports Academy</title>
+  <meta name="theme-color" content="#211032">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css?v=9">
+</head>
+<body>
+  <main id="main">
+    <section class="page-hero">
+      <div class="wrap">
+        <p class="crumb"><a href="index.html">Home</a> / Admin</p>
+        <h1 class="h-xl">Site <span class="outline">settings</span></h1>
+        <p class="lead">Prototype controls for comparing options with Pillar. Choices are saved in this browser only, so anyone else sees the default (sponsors) unless you send them one of the links below.</p>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0" aria-labelledby="strip-title">
+      <div class="wrap admin">
+        <div class="admin-card">
+          <p class="kicker">Homepage</p>
+          <h2 id="strip-title">Bottom of the hero</h2>
+          <p class="muted">The scrolling bar along the bottom of the first screen.</p>
+
+          <fieldset class="opts">
+            <legend class="sr-only">Show in the hero strip</legend>
+            <label class="opt">
+              <input type="radio" name="strip" value="sponsors">
+              <span class="opt-body"><b>Sponsor strip</b><small>“Proudly backed by” partner names, with a Sponsor us button.</small></span>
+              <span class="opt-demo" aria-hidden="true"><span class="wm a">Riverbend</span><span class="wm b">Lakeside</span><span class="wm c">Harbor</span></span>
+            </label>
+            <label class="opt">
+              <input type="radio" name="strip" value="events">
+              <span class="opt-body"><b>Events ticker</b><small>The next upcoming sessions and teams now forming.</small></span>
+              <span class="opt-demo mono" aria-hidden="true"><i class="dot"></i>Sat, Nov 15 · Hockey clinic</span>
+            </label>
+          </fieldset>
+          <p class="note" id="saved" role="status" aria-live="polite"></p>
+
+          <div class="admin-links">
+            <p class="kicker" style="margin:0">Links to share</p>
+            <div class="enter">
+              <a class="btn btn-ghost btn-sm" href="index.html?strip=sponsors" target="_blank" rel="noopener">Sponsors version ↗</a>
+              <a class="btn btn-ghost btn-sm" href="index.html?strip=events" target="_blank" rel="noopener">Events version ↗</a>
+            </div>
+            <p class="note">These links always show that version, whatever is saved here.</p>
+          </div>
+        </div>
+
+        <div class="admin-preview">
+          <div class="preview-bar"><span class="mono">Live preview · homepage</span><a href="index.html" target="_blank" rel="noopener">Open ↗</a></div>
+          <div class="preview-frame" id="frame"><iframe id="preview" src="index.html" title="Homepage preview" loading="lazy" tabindex="-1"></iframe></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js?v=9"></script>
+  <script src="assets/js/site.js?v=9"></script>
+  <script src="assets/js/chrome.js?v=9"></script>
+  <script>
+  (() => {
+    const radios = [...document.querySelectorAll('input[name="strip"]')];
+    const saved = document.getElementById('saved'), iframe = document.getElementById('preview');
+    const label = v => v === 'events' ? 'Events ticker' : 'Sponsor strip';
+    const current = getHeroStrip();
+    radios.forEach(r => { r.checked = r.value === current; });
+    saved.textContent = `Showing: ${label(current)}`;
+    radios.forEach(r => r.addEventListener('change', () => {
+      setHeroStrip(r.value);
+      saved.textContent = `Saved. Homepage now shows the ${label(r.value).toLowerCase()}.`;
+      iframe.contentWindow.location.reload();
+    }));
+
+    // Scale a 1280×800 desktop homepage to fit the preview box
+    const frame = document.getElementById('frame');
+    const fit = () => { iframe.style.transform = `scale(${frame.clientWidth / 1280})`; };
+    new ResizeObserver(fit).observe(frame); fit();
+  })();
+  </script>
+</body>
+</html>
