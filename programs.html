@@ -16,7 +16,7 @@
   <main id="main">
     <section class="page-hero">
       <div class="wrap">
-        <p class="crumb"><a href="index.html">Home</a> / Programs</p>
+        <p class="crumb"><a href="./">Home</a> / Programs</p>
         <h1 class="h-xl">Find your <span class="outline">program</span></h1>
         <p class="lead">Camps, clinics, lessons, training and teams. Filter by sport, age, level and date, then register in a couple of taps.</p>
       </div>
@@ -66,8 +66,8 @@
             <p style="margin:1rem 0 0;font-weight:500">Tell us about your athlete and we'll recommend a program, or let you know when new dates post.</p>
           </div>
           <div class="enter" style="justify-content:flex-end">
-            <a class="btn btn-dark" href="contact.html">Ask a coach</a>
-            <a class="btn btn-line" href="schedule.html">View schedule</a>
+            <a class="btn btn-dark" href="contact">Ask a coach</a>
+            <a class="btn btn-line" href="schedule">View schedule</a>
           </div>
         </div>
       </div>
@@ -146,7 +146,7 @@
 
       const list = sortPrograms(PROGRAMS.filter(matches));
       results.innerHTML = list.length ? list.map(programCard).join('') :
-        `<div class="empty"><h3>No programs match</h3><p>Try removing a filter, or <a href="contact.html">ask a coach</a> what's coming next.</p><button class="btn btn-ghost btn-sm" type="button" data-clear-inline>Clear all filters</button></div>`;
+        `<div class="empty"><h3>No programs match</h3><p>Try removing a filter, or <a href="contact">ask a coach</a> what's coming next.</p><button class="btn btn-ghost btn-sm" type="button" data-clear-inline>Clear all filters</button></div>`;
       const inl = results.querySelector('[data-clear-inline]'); if (inl) inl.addEventListener('click', clearAll);
       countEl.textContent = `${list.length} program${list.length === 1 ? '' : 's'}`;
 

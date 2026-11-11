@@ -110,7 +110,7 @@ export function createEzfacilityEvents(cfg, client = new EZFacilityClient(cfg)) 
         time: formatTimeRange(start, end && end.date === start.date ? end : null),
         label: sessionLabel(r.Title || r.Type, program.title),
         // No online registration link → send families to the contact form for that program
-        url: r.SelfServiceSessionURL || `contact.html?program=${encodeURIComponent(program.id)}`,
+        url: r.SelfServiceSessionURL || `contact?program=${encodeURIComponent(program.id)}`,
         ...(full ? { soldOut: true } : {}),
         ...(r.SlotsTotal > 0 ? { spotsLeft: Math.max(0, r.SlotsAvailable) } : {}),
         ezfacility: { reservationId: r.ID },

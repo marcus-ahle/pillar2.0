@@ -58,7 +58,7 @@ PillarContent.ready.then(() => {
   // ----- upcoming sessions -----
   const sessions = PROGRAMS.flatMap(p => upcomingSessions(p).map(s => ({ p, s, d: parseDate(s.date) }))).sort((a, b) => a.d - b.d);
 
-  // ----- hero bottom strip: events ticker or sponsor strip (set on admin.html) -----
+  // ----- hero bottom strip: events ticker or sponsor strip (set on admin) -----
   const slot = document.getElementById('hero-strip');
   if (getHeroStrip() === 'sponsors' && SPONSORS.length) partnerStrip(slot);
   else {

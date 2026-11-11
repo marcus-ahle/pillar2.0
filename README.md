@@ -1,6 +1,8 @@
 # Pillar Sports Academy site
 
 Static pages (`*.html`, `assets/`) plus a small Node server that serves them and a content API.
+Pages live at clean URLs (`/hockey`, `/schedule`, …); old `*.html` links 301-redirect there.
+Netlify and GitHub Pages serve `hockey.html` at `/hockey` the same way.
 Programs, their dated sessions ("events") and sponsors load live from that API.
 
 ## Run locally
@@ -14,7 +16,7 @@ npm run seed       # load programs, events, sponsors + the mock EZFacility accou
 npm run dev        # site on http://localhost:4173, mock EZFacility on http://localhost:5055
 ```
 
-Admin: http://localhost:4173/admin.html. Tests: `npm test` (uses throwaway databases).
+Admin: http://localhost:4173/admin. Tests: `npm test` (uses throwaway databases).
 
 ## Where content comes from
 

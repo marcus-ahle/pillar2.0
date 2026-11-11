@@ -3,7 +3,7 @@
    and all content from data.js (the single source of truth). */
 
 const HUBS = ['hockey', 'baseball', 'softball', 'volleyball'];
-const bLink = k => SPORTS[k].external || `${k}.html`;
+const bLink = k => SPORTS[k].external || k;
 const extAttr = k => SPORTS[k].external ? ' target="_blank" rel="noopener"' : '';
 const arrowNE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
@@ -34,7 +34,7 @@ function ticket(p, s) {
     const hot = !s.soldOut && days <= 14;
     const status = s.soldOut ? 'Sold out' : days <= 0 ? 'Today' : hot ? `In ${days} day${days === 1 ? '' : 's'}` : 'Open';
     const go = s.soldOut
-      ? `<a class="t-go ghost" href="contact.html?topic=notify&program=${p.id}">Notify me</a>`
+      ? `<a class="t-go ghost" href="contact?topic=notify&program=${p.id}">Notify me</a>`
       : `<a class="t-go" href="${s.url}"${linkAttrs(s.url)} aria-label="Register for ${esc(p.title)}, ${fmt(d, { month: 'long', day: 'numeric' })} (opens registration)">Register ${icon('ext')}</a>`;
     return `<article class="ticket" style="--c:${c}">
       <div class="t-top"><div class="t-date"><span class="mono">${fmt(d, { weekday: 'short' })}</span><span class="day">${d.getDate()}</span><span class="mono">${fmt(d, { month: 'short' })}</span></div>
@@ -45,7 +45,7 @@ function ticket(p, s) {
   }
   const st = programStatus(p);
   const label = p.ongoing ? p.ongoing.label : st.key === 'closed' ? 'Notify me' : 'Details';
-  const url = p.ongoing ? p.ongoing.url : `contact.html?topic=notify&program=${p.id}`;
+  const url = p.ongoing ? p.ongoing.url : `contact?topic=notify&program=${p.id}`;
   return `<article class="ticket" style="--c:${c}">
     <div class="t-top"><div class="t-date"><span class="mono">${p.ongoing ? 'Any day' : 'Next'}</span><span class="day" style="font-size:3.6rem">${p.ongoing ? 'Year-round' : 'Soon'}</span></div>
       <span class="t-status">${p.price ? esc(p.price) : st.label}</span></div>
@@ -88,9 +88,9 @@ function programCard(p) {
       : `<p class="note">Last ran ${fmt(parseDate(p.sessions[p.sessions.length - 1].date), { month: 'short', day: 'numeric' })}. New dates post here first.</p>`;
   }
   let act = linkButtons(p);
-  const ongoingUrl = p.ongoing && (p.ongoing.url.startsWith('#') ? `${p.sport}.html${p.ongoing.url}` : p.ongoing.url);
+  const ongoingUrl = p.ongoing && (p.ongoing.url.startsWith('#') ? `${p.sport}${p.ongoing.url}` : p.ongoing.url);
   if (p.ongoing) act += `<a class="btn btn-acc btn-sm" href="${ongoingUrl}"${linkAttrs(ongoingUrl)}>${esc(p.ongoing.label)} ${icon(isExternal(ongoingUrl) ? 'ext' : 'arrow')}</a>`;
-  else if (st.key !== 'open' && !p.links) act = `<a class="btn btn-ghost btn-sm" href="contact.html?topic=notify&program=${p.id}">${icon('bell')} Notify me</a>`;
+  else if (st.key !== 'open' && !p.links) act = `<a class="btn btn-ghost btn-sm" href="contact?topic=notify&program=${p.id}">${icon('bell')} Notify me</a>`;
   return `<article class="pcard" data-id="${p.id}">
     <div class="top"><span class="lbl">${sp.name} · ${p.type}</span><span class="t-status${st.cls === 'badge-soon' ? ' hot' : ''}">${st.label}</span></div>
     <h3>${esc(p.title)}</h3>
@@ -107,7 +107,7 @@ function programCard(p) {
 function teamPanel(p) {
   const check = icon('check');
   const up = upcomingSessions(p).filter(s => !s.soldOut);
-  const href = p.ongoing && (p.ongoing.url.startsWith('#') && location.pathname.split('/').pop() !== `${p.sport}.html` ? `${p.sport}.html${p.ongoing.url}` : p.ongoing && p.ongoing.url);
+  const href = p.ongoing && (p.ongoing.url.startsWith('#') && currentPage() !== p.sport ? `${p.sport}${p.ongoing.url}` : p.ongoing && p.ongoing.url);
   return `<article class="panel" data-in data-num="${esc((p.ageLabel.match(/\d+U/) || [''])[0])}">
     <p class="kicker">${SPORTS[p.sport].name} · ${esc(p.coach || p.ageLabel)}</p>
     <h3>${esc(p.title)}</h3>
@@ -120,7 +120,7 @@ function teamPanel(p) {
 
 /* "Showing Baseball only" banner for the remembered sport */
 const scopeBanner = k => k && HUBS.includes(k)
-  ? `<div class="scope"><p>Showing <strong>${SPORTS[k].name}</strong> only.</p><a href="${k}.html">${SPORTS[k].name} home</a><button type="button" data-all-sports>Show all sports</button></div>` : '';
+  ? `<div class="scope"><p>Showing <strong>${SPORTS[k].name}</strong> only.</p><a href="${k}">${SPORTS[k].name} home</a><button type="button" data-all-sports>Show all sports</button></div>` : '';
 
 // Pages are built by script after load, so the browser's own scroll restore on refresh
 // lands in the wrong place. Always start at the top unless the URL points to a section.
@@ -131,18 +131,18 @@ function mountB() {
   requestAnimationFrame(() => { const nav = document.querySelector('.nav'); if (!nav) return;
     const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
     onScroll(); window.addEventListener('scroll', onScroll, { passive: true }); });
-  const page = location.pathname.split('/').pop() || 'index.html';
+  const page = currentPage();
   const navSports = Object.entries(SPORTS).map(([k, s]) =>
-    `<li><a href="${bLink(k)}"${extAttr(k)}${page === k + '.html' ? ' aria-current="page"' : ''} style="--c:var(--${k})"><span class="dot" aria-hidden="true"></span>${s.name}${s.external ? icon('ext') + '<span class="sr-only"> (opens in a new tab)</span>' : ''}</a></li>`).join('');
+    `<li><a href="${bLink(k)}"${extAttr(k)}${page === k ? ' aria-current="page"' : ''} style="--c:var(--${k})"><span class="dot" aria-hidden="true"></span>${s.name}${s.external ? icon('ext') + '<span class="sr-only"> (opens in a new tab)</span>' : ''}</a></li>`).join('');
 
   document.body.insertAdjacentHTML('afterbegin', `
   <a class="skip" href="#main">Skip to content</a>
   <header class="nav" aria-label="Site">
-    <a class="nav-brand" href="index.html"><img src="${ASSETS.logo}" alt="" width="52" height="52"><span>Pillar<span class="nav-sports"> Sports</span><span class="nav-academy"> Academy</span></span><span class="sr-only"> home</span></a>
-    <nav aria-label="Main"><ul class="nav-links">${navSports}<li><a href="schedule.html"${page === 'schedule.html' ? ' aria-current="page"' : ''}>Schedule</a></li></ul></nav>
+    <a class="nav-brand" href="./"><img src="${ASSETS.logo}" alt="" width="52" height="52"><span>Pillar<span class="nav-sports"> Sports</span><span class="nav-academy"> Academy</span></span><span class="sr-only"> home</span></a>
+    <nav aria-label="Main"><ul class="nav-links">${navSports}<li><a href="schedule"${page === 'schedule' ? ' aria-current="page"' : ''}>Schedule</a></li></ul></nav>
     <button class="icon-btn" type="button" id="motion" aria-pressed="${paused}" aria-label="Pause animations" title="Pause animations">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg></button>
-    <a class="btn btn-acc btn-sm" href="register.html">Register</a>
+    <a class="btn btn-acc btn-sm" href="register">Register</a>
     <button class="icon-btn menu-open" type="button" aria-expanded="false" aria-controls="overlay" aria-label="Open menu">${icon('menu')}</button>
   </header>
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Menu">
@@ -150,12 +150,12 @@ function mountB() {
     <p class="kicker">Choose your sport</p>
     <ul>${Object.entries(SPORTS).map(([k, s], i) => `<li style="--i:${i}"><a href="${bLink(k)}"${extAttr(k)} style="--c:var(--${k})">${s.name}<small>${s.external ? '↗<span class="sr-only"> opens in a new tab</span>' : '0' + (i + 1)}</small></a></li>`).join('')}</ul>
     <div class="sub">
-      <a class="btn btn-ghost btn-sm" href="schedule.html">Schedule</a>
-      <a class="btn btn-ghost btn-sm" href="programs.html">All programs</a>
-      <a class="btn btn-ghost btn-sm" href="coaches.html">Coaches</a>
-      <a class="btn btn-ghost btn-sm" href="contact.html">Contact</a>
+      <a class="btn btn-ghost btn-sm" href="schedule">Schedule</a>
+      <a class="btn btn-ghost btn-sm" href="programs">All programs</a>
+      <a class="btn btn-ghost btn-sm" href="coaches">Coaches</a>
+      <a class="btn btn-ghost btn-sm" href="contact">Contact</a>
     </div>
-    <a class="btn btn-acc" href="register.html">Register now ${arrowNE}</a>
+    <a class="btn btn-acc" href="register">Register now ${arrowNE}</a>
   </div>`);
 
   document.body.insertAdjacentHTML('beforeend', `
@@ -169,13 +169,13 @@ function mountB() {
         </div>
         <nav aria-label="Sports"><h2>Sports</h2><ul>${Object.entries(SPORTS).map(([k, s]) => `<li><a href="${bLink(k)}"${extAttr(k)}>${s.name}${s.external ? ' ↗' : ''}</a></li>`).join('')}</ul></nav>
         <nav aria-label="Academy"><h2>Academy</h2><ul>
-          <li><a href="schedule.html">Schedule</a></li><li><a href="programs.html">All programs</a></li>
-          <li><a href="coaches.html">Coaches</a></li><li><a href="register.html">Register</a></li><li><a href="contact.html">Contact</a></li><li><a href="sponsors.html">Sponsor us</a></li></ul></nav>
+          <li><a href="schedule">Schedule</a></li><li><a href="programs">All programs</a></li>
+          <li><a href="coaches">Coaches</a></li><li><a href="register">Register</a></li><li><a href="contact">Contact</a></li><li><a href="sponsors">Sponsor us</a></li></ul></nav>
         <nav aria-label="More from Pillar"><h2>More Pillar</h2><ul>
           <li><a href="https://pillarfitness.ezfacility.com/OnlineRegistration" target="_blank" rel="noopener">Performance & Fitness ↗</a></li>
           <li><a href="https://www.instagram.com/pillar_perform/" target="_blank" rel="noopener">Instagram ↗</a></li>
           <li><a href="https://www.facebook.com/pillarperformanceandsports" target="_blank" rel="noopener">Facebook ↗</a></li>
-          <li><a href="strategy.html">Redesign overview</a></li></ul></nav>
+          <li><a href="strategy">Redesign overview</a></li></ul></nav>
       </div>
     </div>
     <div class="wordmark" aria-hidden="true">Pillar</div>
@@ -229,7 +229,7 @@ function countUp() {
 
 mountB();
 
-/* Homepage hero strip: 'sponsors' or 'events'. Saved per browser from admin.html;
+/* Homepage hero strip: 'sponsors' or 'events'. Saved per browser from admin;
    ?strip=events|sponsors on the homepage URL overrides it for that visit. */
 const HERO_STRIP_KEY = 'pillar.heroStrip';
 const HERO_STRIP_DEFAULT = 'sponsors';
@@ -251,6 +251,6 @@ function partnerStrip(el) {
     <span class="lbl">Proudly backed by</span>
     <p class="sr-only">${SPONSORS.map(s => esc(s.name)).join(', ')}</p>
     <div class="vp" aria-hidden="true"><div class="track">${row}${row}</div></div>
-    <a class="btn btn-ghost btn-sm" href="sponsors.html">Sponsor us ${arrowNE}</a>
+    <a class="btn btn-ghost btn-sm" href="sponsors">Sponsor us ${arrowNE}</a>
   </section>`;
 }

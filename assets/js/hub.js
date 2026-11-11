@@ -31,13 +31,13 @@ PillarContent.ready.then(() => {
   const notifyTicket = `<article class="ticket notify" style="--c:var(--${key})">
       <div class="t-top"><div class="t-date"><span class="mono">Coming</span><span class="day" style="font-size:3.6rem">Soon</span></div><span class="t-status">New dates</span></div>
       <div class="t-body"><span class="sport">${sport.name} · Camps & clinics</span><h3>Be first in line</h3><p>Camps and clinics post here first. Get an email the day registration opens.</p></div>
-      <div class="t-foot"><span class="mono">Free alert</span><a class="t-go" href="contact.html?topic=notify&sport=${key}">Notify me ${arrowNE}</a></div>
+      <div class="t-foot"><span class="mono">Free alert</span><a class="t-go" href="contact?topic=notify&sport=${key}">Notify me ${arrowNE}</a></div>
     </article>`;
 
   document.getElementById('main').innerHTML = `
     <section class="hub-hero" aria-labelledby="hub-title">
       <div class="wrap">
-        <p class="crumb"><a href="index.html">Home</a> / ${sport.name}</p>
+        <p class="crumb"><a href="./">Home</a> / ${sport.name}</p>
         <p class="hub-brand" aria-hidden="true"><img src="${ASSETS.logo}" alt="" width="48" height="48">Pillar</p>
         <h1 class="hub-word${hub.photo ? ' has-photo' : ''}${sport.name.length > 8 ? ' long' : ''}" id="hub-title"${hub.photo ? ` style="background-image:linear-gradient(#7877e6,#7877e6),url('${hub.photo}')"` : ''}><span class="sr-only">Pillar </span>${sport.name}</h1>
         <div class="hub-intro">
@@ -137,7 +137,7 @@ PillarContent.ready.then(() => {
             <p style="margin:1rem 0 0;font-weight:500"><a href="mailto:${hub.contact.email}">${hub.contact.email}</a> · replies within one business day</p>
           </div>
           <div class="enter" style="justify-content:flex-end">
-            <a class="btn btn-dark" href="contact.html?sport=${key}">Ask a coach ${arrowNE}</a>
+            <a class="btn btn-dark" href="contact?sport=${key}">Ask a coach ${arrowNE}</a>
             ${sport.store ? `<a class="btn btn-line" href="${sport.store}" target="_blank" rel="noopener">Spirit wear ${icon('ext')}</a>` : ''}
           </div>
         </div>

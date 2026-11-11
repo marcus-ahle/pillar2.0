@@ -106,7 +106,7 @@ function renderProgramCard(p, opts = {}) {
     const ext = isExternal(p.ongoing.url);
     actions = `<a class="btn btn-primary btn-sm" href="${p.ongoing.url}"${linkAttrs(p.ongoing.url)}>${esc(p.ongoing.label)} ${icon(ext ? 'ext' : 'arrow')}</a>`;
   } else if (st.key === 'closed' || st.key === 'full') {
-    actions = `<a class="btn btn-outline btn-sm" href="contact.html?topic=notify&program=${p.id}">${icon('bell')} Notify me</a>`;
+    actions = `<a class="btn btn-outline btn-sm" href="contact?topic=notify&program=${p.id}">${icon('bell')} Notify me</a>`;
   }
   const extNote = p.sport === 'volleyball' && !opts.compact ? '<span class="note">Volleyball details on pillarvolleyball.com</span>' : '';
 
@@ -178,19 +178,21 @@ const setSport = s => { try { s ? localStorage.setItem(SPORT_KEY, s) : localStor
 /* ---------- Header / footer ---------- */
 const HUB_SPORTS = ['hockey', 'baseball', 'softball'];
 const NAV = [
-  { href: 'schedule.html', label: 'Schedule' },
-  { href: 'programs.html', label: 'All programs' },
-  { href: 'coaches.html', label: 'Coaches' },
-  { href: 'contact.html', label: 'Contact' },
+  { href: 'schedule', label: 'Schedule' },
+  { href: 'programs', label: 'All programs' },
+  { href: 'coaches', label: 'Coaches' },
+  { href: 'contact', label: 'Contact' },
 ];
-const sportLink = k => SPORTS[k].external || `${k}.html`;
+const sportLink = k => SPORTS[k].external || k;
+/* Current page as a clean name: '/hockey' and '/hockey.html' → 'hockey', '/' → 'index' */
+const currentPage = () => location.pathname.split('/').pop().replace(/\.html$/, '') || 'index';
 
 function mountChrome() {
-  const page = location.pathname.split('/').pop() || 'index.html';
+  const page = currentPage();
   const cur = href => href === page ? ' aria-current="page"' : '';
   const sportNav = Object.entries(SPORTS).map(([k, s]) => `<li><a class="nav-sport" href="${sportLink(k)}"${s.external ? ' target="_blank" rel="noopener"' : cur(sportLink(k))} style="--sport:${s.color}"><span class="nav-dot" aria-hidden="true"></span>${s.name}${s.external ? icon('ext', 'ext-icon') + '<span class="sr-only"> (opens pillarvolleyball.com)</span>' : ''}</a></li>`).join('');
-  const navItems = sportNav + '<li class="nav-sep" aria-hidden="true"></li>' + NAV.filter(n => n.href !== 'programs.html').map(n => `<li><a href="${n.href}"${cur(n.href)}>${n.label}</a></li>`).join('');
-  const brand = (light) => `<a class="brand" href="index.html"${light ? ' style="color:#fff"' : ''}><img src="${ASSETS.logo}" alt="" width="44" height="44"><span class="brand-text">Pillar Sports<small${light ? ' style="color:var(--on-dark-muted)"' : ''}>Academy · Rossford, OH</small></span><span class="sr-only">— home</span></a>`;
+  const navItems = sportNav + '<li class="nav-sep" aria-hidden="true"></li>' + NAV.filter(n => n.href !== 'programs').map(n => `<li><a href="${n.href}"${cur(n.href)}>${n.label}</a></li>`).join('');
+  const brand = (light) => `<a class="brand" href="./"${light ? ' style="color:#fff"' : ''}><img src="${ASSETS.logo}" alt="" width="44" height="44"><span class="brand-text">Pillar Sports<small${light ? ' style="color:var(--on-dark-muted)"' : ''}>Academy · Rossford, OH</small></span><span class="sr-only">— home</span></a>`;
 
   const header = document.getElementById('site-header');
   if (header) header.outerHTML = `
@@ -200,7 +202,7 @@ function mountChrome() {
       ${brand(false)}
       <nav class="main-nav" aria-label="Main"><ul>${navItems}</ul></nav>
       <div class="header-cta">
-        <a class="btn btn-primary btn-sm" href="register.html"${page === 'register.html' ? ' aria-current="page"' : ''}>Register</a>
+        <a class="btn btn-primary btn-sm" href="register"${page === 'register' ? ' aria-current="page"' : ''}>Register</a>
         <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">${icon('menu')}</button>
       </div>
     </div>
@@ -210,7 +212,7 @@ function mountChrome() {
     <p class="mobile-label" style="margin-top:1.5rem">Choose your sport</p>
     <ul class="mobile-sport-list">${Object.entries(SPORTS).map(([k, s]) => `<li><a href="${sportLink(k)}"${s.external ? ' target="_blank" rel="noopener"' : ''} style="--sport:${s.color}"><span><span class="nav-dot" aria-hidden="true"></span>${s.name}</span>${icon(s.external ? 'ext' : 'arrow')}</a></li>`).join('')}</ul>
     <div class="mobile-links">${NAV.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}</div>
-    <a class="btn btn-accent btn-block" href="register.html">Register now</a>
+    <a class="btn btn-accent btn-block" href="register">Register now</a>
     <p class="note" style="color:var(--on-dark-muted);margin-top:1.25rem">Questions? <a href="mailto:drew@pillarfitness.com" style="color:#fff">drew@pillarfitness.com</a></p>
   </div>`;
 
@@ -237,12 +239,12 @@ function mountChrome() {
           ${Object.entries(SPORTS).map(([k, s]) => `<li><a href="${sportLink(k)}"${s.external ? ' target="_blank" rel="noopener"' : ''}>${s.name}${s.external ? icon('ext', 'ext-icon') : ''}</a></li>`).join('')}
         </ul></nav>
         <nav aria-label="Academy"><h2>Academy</h2><ul>
-          <li><a href="schedule.html">Schedule</a></li>
-          <li><a href="programs.html">All programs</a></li>
-          <li><a href="register.html#teams">Teams & Pricing</a></li>
-          <li><a href="coaches.html">Coaches</a></li>
-          <li><a href="register.html">Register</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="schedule">Schedule</a></li>
+          <li><a href="programs">All programs</a></li>
+          <li><a href="register#teams">Teams & Pricing</a></li>
+          <li><a href="coaches">Coaches</a></li>
+          <li><a href="register">Register</a></li>
+          <li><a href="contact">Contact</a></li>
         </ul></nav>
         <nav aria-label="More from Pillar"><h2>More Pillar</h2><ul>
           <li><a href="https://pillarfitness.ezfacility.com/OnlineRegistration" target="_blank" rel="noopener">Performance & Fitness${icon('ext', 'ext-icon')}</a></li>

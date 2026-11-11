@@ -123,7 +123,7 @@ test('database and EZFacility sources produce the same events for linked program
   assert.equal(openGym.sport, 'volleyball');
   assert.equal(openGym.sessions.length, 2);
   assert.equal(openGym.sessions[0].label, '13U – 18U');
-  assert.match(openGym.sessions[0].url, /^contact\.html\?program=/);
+  assert.match(openGym.sessions[0].url, /^contact\?program=/);
   assert.ok(!JSON.stringify(ez).includes('Court 2 rental'));
 });
 
@@ -155,7 +155,25 @@ test('only pages and assets are served', async () => {
   for (const p of ['/package.json', '/server/app.js', '/.env', '/mock-ezfacility/fixtures.js', '/node_modules/express/package.json']) {
     assert.equal((await fetch(SITE + p)).status, 404, p);
   }
-  for (const p of ['/', '/admin.html', '/assets/js/content.js']) {
+  for (const p of ['/', '/admin', '/hockey', '/schedule', '/assets/js/content.js', '/concept-a/', '/concept-a/schedule']) {
     assert.equal((await fetch(SITE + p)).status, 200, p);
+  }
+  for (const p of ['/nope', '/nope.html', '/server', '/package']) {
+    assert.equal((await fetch(SITE + p)).status, 404, p);
+  }
+});
+
+test('old .html URLs redirect to clean ones, keeping the query', async () => {
+  const cases = {
+    '/hockey.html': '/hockey',
+    '/schedule.html?sport=hockey': '/schedule?sport=hockey',
+    '/index.html?strip=events': '/?strip=events',
+    '/index': '/',
+    '/programs/': '/programs',
+  };
+  for (const [from, to] of Object.entries(cases)) {
+    const res = await fetch(SITE + from, { redirect: 'manual' });
+    assert.equal(res.status, 301, from);
+    assert.equal(res.headers.get('location'), to, from);
   }
 });

@@ -1,4 +1,4 @@
-/* Sport hub — one template renders hockey.html, baseball.html and softball.html.
+/* Sport hub — one template renders hockey, baseball and softball.
    The page sets <body data-sport="baseball">; everything else comes from data.js.
    In production this becomes one Astro route: /[sport]. */
 (() => {
@@ -53,7 +53,7 @@
     <section class="page-hero hub-hero" style="--sport:${sport.color}" aria-labelledby="hub-title">
       <div class="container hub-hero-inner">
         <div>
-          <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / ${sport.name}</nav>
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a> / ${sport.name}</nav>
           <div class="hub-badge"><img src="${hub.logo}" alt="" width="56" height="56"></div>
           <h1 id="hub-title">Pillar ${sport.name}</h1>
           <p class="hub-tagline">${esc(hub.tagline)}</p>
@@ -77,7 +77,7 @@
       <div class="container">
         <div class="section-head">
           <div><p class="eyebrow">${sport.name} programs</p><h2 id="prog-title">Train with Pillar ${sport.name}</h2></div>
-          <a class="link-arrow" href="schedule.html?sport=${key}">${sport.name} schedule ${arrow}</a>
+          <a class="link-arrow" href="schedule?sport=${key}">${sport.name} schedule ${arrow}</a>
         </div>
         ${types.length > 1 ? `<div class="chip-row" id="type-chips" role="group" aria-label="Filter ${sport.name} programs by type" style="margin-bottom:1.5rem">
           <button type="button" class="chip" data-val="" aria-pressed="true">All</button>
@@ -123,7 +123,7 @@
             <p class="mb-0">Email ${esc(first(hub.contact.name) === 'Pillar' ? 'our hockey staff' : first(hub.contact.name))} at <a href="mailto:${hub.contact.email}" style="color:#fff">${hub.contact.email}</a>, or send a note and we'll reply within one business day.</p>
           </div>
           <div class="actions">
-            <a class="btn btn-accent" href="contact.html?sport=${key}">Ask a coach</a>
+            <a class="btn btn-accent" href="contact?sport=${key}">Ask a coach</a>
             ${sport.store ? `<a class="btn btn-ghost-light" href="${sport.store}" target="_blank" rel="noopener">Spirit wear ${icon('ext')}</a>` : ''}
           </div>
         </div>
@@ -133,7 +133,7 @@
     <section class="section-sm section-alt" aria-labelledby="more-title">
       <div class="container">
         <div class="section-head"><div><p class="eyebrow">Multi-sport family?</p><h2 id="more-title">Also at Pillar</h2></div>
-          <a class="link-arrow" href="programs.html">Browse all programs ${arrow}</a></div>
+          <a class="link-arrow" href="programs">Browse all programs ${arrow}</a></div>
         <div class="grid grid-3">${others.map(([k, s]) => `<a class="sport-tile sport-tile-sm" href="${sportLink(k)}" style="--sport:${s.color}"${s.external ? ' target="_blank" rel="noopener"' : ''}>
           <div class="icon-wrap">${icon(k)}</div><h3>${s.name}</h3>
           <span class="go">${s.external ? 'pillarvolleyball.com ' + icon('ext') : 'Visit ' + s.name + ' ' + arrow}</span></a>`).join('')}</div>
@@ -148,7 +148,7 @@
       ? `<article class="card hub-notify" style="--sport:${sport.color}"><div class="icon-circle">${icon('bell')}</div>
           <h3>More ${sport.name.toLowerCase()} dates are coming</h3>
           <p class="muted">Camps and clinics post here first. Get an email the day registration opens.</p>
-          <a class="btn btn-outline btn-sm" href="contact.html?topic=notify&sport=${key}">${icon('bell')} Notify me</a></article>` : '';
+          <a class="btn btn-outline btn-sm" href="contact?topic=notify&sport=${key}">${icon('bell')} Notify me</a></article>` : '';
     grid.innerHTML = list.map(p => renderProgramCard(p)).join('') + notify;
   };
   renderPrograms('');

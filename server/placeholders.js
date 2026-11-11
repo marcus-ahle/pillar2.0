@@ -6,7 +6,7 @@
    the mock EZFacility schedule. Replace them with real dates before launch:
    delete events where placeholder is true, then add the real ones. */
 
-const contact = id => `contact.html?program=${id}`;
+const contact = id => `contact?program=${id}`;
 
 export const PLACEHOLDER_EVENTS = [
   // Hockey clinics, continuing their Wednesday pattern

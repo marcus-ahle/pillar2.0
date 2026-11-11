@@ -52,10 +52,21 @@ export function createApp(content) {
 
   // Static site: only the pages and their assets (not server code, package files or .env)
   app.use('/assets', express.static(path.join(ROOT, 'assets'), { dotfiles: 'deny' }));
-  app.use('/concept-a', express.static(path.join(ROOT, 'concept-a'), { dotfiles: 'deny' }));
-  app.get(/^\/(?:([\w-]+\.html))?$/, (req, res, next) => {
-    const name = req.params[0] || 'index.html';
-    existsSync(path.join(ROOT, name)) ? res.sendFile(name, { root: ROOT }) : next();
+  // Archived Concept A keeps its .html files; extensionless links from site.js resolve too
+  app.use('/concept-a', express.static(path.join(ROOT, 'concept-a'), { dotfiles: 'deny', extensions: ['html'] }));
+
+  // Pages live at clean URLs: /hockey serves hockey.html, / serves index.html.
+  // Old /hockey.html, /hockey/ and /index links redirect there (query string kept).
+  const isPage = name => /^[\w-]+$/.test(name) && existsSync(path.join(ROOT, `${name}.html`));
+  const cleanUrl = (name, req) => {
+    const q = req.originalUrl.indexOf('?');
+    return (name === 'index' ? '/' : `/${name}`) + (q === -1 ? '' : req.originalUrl.slice(q));
+  };
+  app.get(/^\/([\w-]+)(?:\.html|\/)$/, (req, res, next) => isPage(req.params[0]) ? res.redirect(301, cleanUrl(req.params[0], req)) : next());
+  app.get('/index', (req, res) => res.redirect(301, cleanUrl('index', req)));
+  app.get(/^\/([\w-]*)$/, (req, res, next) => {
+    const name = req.params[0] || 'index';
+    isPage(name) ? res.sendFile(`${name}.html`, { root: ROOT }) : next();
   });
   app.use((req, res) => res.status(404).type('text/plain').send('Not found'));
   return app;
@@ -73,7 +84,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   if (!seeded.skipped) console.log(`Empty database, seeded ${seeded.programs} programs, ${seeded.events} events, ${seeded.sponsors} sponsors`);
   const content = createContentService(db, config);
   createApp(content).listen(config.port, () => {
-    console.log(`Pillar site running at http://localhost:${config.port}  (admin: /admin.html)`);
+    console.log(`Pillar site running at http://localhost:${config.port}  (admin: /admin)`);
     console.log(`EZFacility API: ${config.ezfacility.baseUrl}`);
   });
 }

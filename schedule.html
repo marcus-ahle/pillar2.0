@@ -16,7 +16,7 @@
   <main id="main">
     <section class="page-hero">
       <div class="wrap">
-        <p class="crumb"><a href="index.html">Home</a> / Schedule</p>
+        <p class="crumb"><a href="./">Home</a> / Schedule</p>
         <h1 class="h-xl">What's <span class="acc">up next</span></h1>
         <p class="lead">Every dated camp, clinic, evaluation and tournament in one list. Register in one tap, or add it straight to your calendar.</p>
       </div>
@@ -97,7 +97,7 @@
     function row(s) {
       const sp = SPORTS[s.p.sport];
       const days = daysFromToday(s.d), hot = !s.soldOut && days <= 14;
-      const reg = s.soldOut ? `<span class="t-status">Sold out</span><a class="btn btn-ghost btn-sm" href="contact.html?topic=notify&program=${s.p.id}">${icon('bell')} Notify me</a>`
+      const reg = s.soldOut ? `<span class="t-status">Sold out</span><a class="btn btn-ghost btn-sm" href="contact?topic=notify&program=${s.p.id}">${icon('bell')} Notify me</a>`
         : `<a class="btn btn-acc btn-sm" href="${s.url}"${linkAttrs(s.url)} aria-label="Register for ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} (opens registration)">Register ${icon('ext')}</a>`;
       const cal = `<a class="btn btn-ghost btn-sm" href="${ics(s)}" download="pillar-${s.p.id}-${s.date}.ics" aria-label="Add ${esc(s.p.title)} on ${fmt(s.d, { month: 'long', day: 'numeric' })} to calendar">${icon('calendar')} Add to calendar</a>`;
       return `<article class="row">
@@ -130,7 +130,7 @@
             <h2>${month.split(' ')[0]} <span>${month.split(' ')[1]} · ${items.length} session${items.length === 1 ? '' : 's'}</span></h2>
             ${items.map(row).join('')}
           </section>`).join('')
-        : `<div class="empty"><h3>Nothing on the calendar yet</h3><p>New dates post here first. <a href="contact.html?topic=notify">Get notified</a> or check year-round programs below.</p></div>`;
+        : `<div class="empty"><h3>Nothing on the calendar yet</h3><p>New dates post here first. <a href="contact?topic=notify">Get notified</a> or check year-round programs below.</p></div>`;
 
       const ongoing = PROGRAMS.filter(p => p.ongoing && !p.sessions && (!active.size || active.has(p.sport)));
       document.getElementById('ongoing').innerHTML = ongoing.map(p => ticket(p)).join('');
