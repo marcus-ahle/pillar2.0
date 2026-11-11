@@ -1,0 +1,19 @@
+{
+  "name": "pillar-site",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "db:up": "docker compose up -d mongo",
+    "db:down": "docker compose stop mongo",
+    "seed": "node --env-file-if-exists=.env server/seed.js --reset && node --env-file-if-exists=.env mock-ezfacility/seed.js --reset",
+    "start": "node --env-file-if-exists=.env server/app.js",
+    "mock:ez": "node --env-file-if-exists=.env mock-ezfacility/server.js",
+    "dev": "node --env-file-if-exists=.env scripts/dev.js",
+    "test": "node --env-file-if-exists=.env --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0"
+  }
+}

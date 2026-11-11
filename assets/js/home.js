@@ -1,5 +1,5 @@
 /* Homepage */
-(() => {
+PillarContent.ready.then(() => {
   const root = document.documentElement;
   const order = ['hockey', 'baseball', 'softball', 'volleyball'];
   const STAGE = {
@@ -120,4 +120,4 @@
 
   revealB();
   countUp();
-})();
+});

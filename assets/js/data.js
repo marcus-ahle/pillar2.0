@@ -3,7 +3,11 @@
    (pillarsportsacademy.com + pillarvolleyball.com). Fields marked
    `confirm: true` hold placeholder ages/levels that the live site
    doesn't state; confirm them with the owner before launch.
-   In production this file becomes CMS-managed content. */
+
+   PROGRAMS (with their sessions) and SPONSORS are now served live from MongoDB /
+   EZFacility by the site API (see content.js and server/). The copies here seed
+   the database (npm run seed) and are the fallback on a static host with no API.
+   Edit live programs, events and sponsors in MongoDB, not here. */
 
 const CDN = 'https://images.squarespace-cdn.com/content/v1/6a0ca4d7d63dd86d7ee2d26b/';
 const img = (path, w = 750) => `${CDN}${path}?format=${w}w`;

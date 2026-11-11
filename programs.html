@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/main.css?v=9">
+  <link rel="stylesheet" href="assets/css/main.css?v=10">
 </head>
 <body>
   <main id="main">
@@ -74,11 +74,12 @@
     </section>
   </main>
 
-  <script src="assets/js/data.js?v=9"></script>
-  <script src="assets/js/site.js?v=9"></script>
-  <script src="assets/js/chrome.js?v=9"></script>
+  <script src="assets/js/data.js?v=10"></script>
+  <script src="assets/js/content.js?v=10"></script>
+  <script src="assets/js/site.js?v=10"></script>
+  <script src="assets/js/chrome.js?v=10"></script>
   <script>
-  (() => {
+  PillarContent.ready.then(() => {
     const AGES = { '8': [0, 8, '8 & under'], '9-11': [9, 11, '9 – 11'], '12-14': [12, 14, '12 – 14'], '15-18': [15, 18, '15 – 18'] };
     const GROUPS = {
       sport: Object.entries(SPORTS).map(([k, s]) => [k, s.name]),
@@ -182,7 +183,7 @@
     });
 
     update();
-  })();
+  });
   </script>
 </body>
 </html>

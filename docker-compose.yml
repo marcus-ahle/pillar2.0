@@ -1,0 +1,17 @@
+# Local MongoDB for the Pillar site API and the mock EZFacility API.
+#   npm run db:up     start it (data persists in the pillar-mongo-data volume)
+#   npm run db:down   stop it
+name: pillar
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: pillar-mongo
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - pillar-mongo-data:/data/db
+    restart: unless-stopped
+
+volumes:
+  pillar-mongo-data:

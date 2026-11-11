@@ -588,3 +588,15 @@ input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--lav); fl
 .preview-bar a { font: 600 .85rem var(--body); text-transform: none; letter-spacing: 0; }
 .preview-frame { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
 .preview-frame iframe { position: absolute; top: 0; left: 0; width: 1280px; height: 800px; border: 0; transform-origin: 0 0; pointer-events: none; }
+.opts:disabled .opt { opacity: .55; cursor: progress; }
+.status-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.status-list { display: grid; gap: 0; margin: 0 0 1.25rem; }
+.status-list > div { display: grid; gap: .35rem; padding: .9rem 0; border-top: 1px solid var(--line); }
+.status-list dt { font: 800 1.1rem var(--display); text-transform: uppercase; font-stretch: 80%; }
+.status-list dd { margin: 0; font-size: .82rem; color: var(--text); overflow-wrap: anywhere; }
+.status-list small { color: var(--muted); font-size: .76rem; }
+.st { display: inline-grid; grid-template-columns: auto 1fr; gap: .6rem; align-items: baseline; }
+.st i { width: 9px; height: 9px; border-radius: 50%; translate: 0 -1px; }
+.st.ok i { background: var(--acc); box-shadow: 0 0 10px var(--acc); }
+.st.bad i { border: 2px solid var(--muted); }
+.st.bad { color: var(--muted); }

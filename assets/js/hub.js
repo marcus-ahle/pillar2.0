@@ -1,5 +1,8 @@
 /* Sport hub: hockey, baseball, softball and volleyball pages share this template */
-(() => {
+// Theme the page right away; the rest waits for live programs and events
+if (SPORTS[document.body.dataset.sport]) document.documentElement.dataset.theme = document.body.dataset.sport;
+
+PillarContent.ready.then(() => {
   const key = document.body.dataset.sport;
   const sport = SPORTS[key], hub = SPORT_HUBS[key];
   if (!sport || !hub) return;
@@ -183,4 +186,4 @@
 
   revealB();
   countUp();
-})();
+});

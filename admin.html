@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/main.css?v=9">
+  <link rel="stylesheet" href="assets/css/main.css?v=10">
 </head>
 <body>
   <main id="main">
@@ -17,7 +17,45 @@
       <div class="wrap">
         <p class="crumb"><a href="index.html">Home</a> / Admin</p>
         <h1 class="h-xl">Site <span class="outline">settings</span></h1>
-        <p class="lead">Prototype controls for comparing options with Pillar. Choices are saved in this browser only, so anyone else sees the default (sponsors) unless you send them one of the links below.</p>
+        <p class="lead">Prototype controls for comparing options with Pillar. The content source is saved on the server for everyone. The hero strip choice is saved in this browser only, so anyone else sees the default (sponsors) unless you send them one of its links.</p>
+      </div>
+    </section>
+
+    <section class="sec-sm" style="padding-top:0" aria-labelledby="source-title">
+      <div class="wrap admin">
+        <div class="admin-card">
+          <p class="kicker">Content</p>
+          <h2 id="source-title">Events &amp; sponsors source</h2>
+          <p class="muted">Where every page gets its programs’ dates and the sponsor list. This is saved on the server, so it changes the site for everyone.</p>
+
+          <fieldset class="opts" id="source-opts" disabled>
+            <legend class="sr-only">Load events from</legend>
+            <label class="opt">
+              <input type="radio" name="source" value="database">
+              <span class="opt-body"><b>Option 1 · Database</b><small>Events and sponsors both come from the site’s MongoDB.</small></span>
+              <span class="opt-demo mono" aria-hidden="true"><i class="dot"></i>MongoDB → events + sponsors</span>
+            </label>
+            <label class="opt">
+              <input type="radio" name="source" value="ezfacility">
+              <span class="opt-body"><b>Option 2 · EZFacility</b><small>Events come live from the EZFacility schedule. Sponsors stay in MongoDB.</small></span>
+              <span class="opt-demo mono" aria-hidden="true"><i class="dot"></i>EZFacility → events</span>
+            </label>
+          </fieldset>
+          <p class="note" id="source-saved" role="status" aria-live="polite">Checking the server…</p>
+        </div>
+
+        <div class="admin-card" aria-labelledby="status-title">
+          <div class="status-head">
+            <p class="kicker" id="status-title" style="margin:0">Connections</p>
+            <button type="button" class="btn btn-ghost btn-sm" id="status-refresh">Check again</button>
+          </div>
+          <dl class="status-list" id="status">
+            <div><dt>MongoDB</dt><dd class="mono">…</dd></div>
+            <div><dt>EZFacility</dt><dd class="mono">…</dd></div>
+            <div><dt>Site now shows</dt><dd class="mono">…</dd></div>
+          </dl>
+          <p class="note">Switching to the real EZFacility account only changes the server’s EZFACILITY_* settings (see .env.example). This page and the site stay the same.</p>
+        </div>
       </div>
     </section>
 
@@ -61,9 +99,9 @@
     </section>
   </main>
 
-  <script src="assets/js/data.js?v=9"></script>
-  <script src="assets/js/site.js?v=9"></script>
-  <script src="assets/js/chrome.js?v=9"></script>
+  <script src="assets/js/data.js?v=10"></script>
+  <script src="assets/js/site.js?v=10"></script>
+  <script src="assets/js/chrome.js?v=10"></script>
   <script>
   (() => {
     const radios = [...document.querySelectorAll('input[name="strip"]')];
@@ -77,6 +115,65 @@
       saved.textContent = `Saved. Homepage now shows the ${label(r.value).toLowerCase()}.`;
       iframe.contentWindow.location.reload();
     }));
+
+    // ----- Events & sponsors source (stored on the server) -----
+    const srcOpts = document.getElementById('source-opts'), srcSaved = document.getElementById('source-saved');
+    const srcRadios = [...srcOpts.querySelectorAll('input[name="source"]')];
+    const statusEl = document.getElementById('status'), refreshBtn = document.getElementById('status-refresh');
+    const SRC = { database: 'Option 1 · Database', ezfacility: 'Option 2 · EZFacility' };
+    const api = (path, init) => fetch(`api/${path}`, { cache: 'no-store', ...init }).then(async r => {
+      const body = r.headers.get('content-type')?.includes('json') ? await r.json() : null;
+      if (!r.ok || !body) throw new Error(body?.error || `HTTP ${r.status}`);
+      return body;
+    });
+    const row = (state, html) => `<span class="st ${state}"><i aria-hidden="true"></i><span>${html}</span></span>`;
+
+    async function loadStatus() {
+      refreshBtn.disabled = true;
+      const [dbDd, ezDd, nowDd] = statusEl.querySelectorAll('dd');
+      try {
+        const [s, ev] = await Promise.all([api('status'), api('events')]);
+        dbDd.innerHTML = row('ok', `Connected · ${esc(s.database.name)} · ${s.database.programs} programs, ${s.database.events} events, ${s.database.sponsors} sponsors`
+          + (s.database.placeholders ? `<br><small>${s.database.placeholders} of those events are placeholder dates (server/placeholders.js). Replace them before launch.</small>` : ''));
+        const ez = s.ezfacility;
+        ezDd.innerHTML = ez.ok
+          ? row('ok', `Connected${ez.mock ? ' (local mock)' : ''} · ${esc(ez.location?.name || '')} · ${ez.ms} ms<br><small>${esc(ez.baseUrl)}</small>`)
+          : row('bad', `Not connected · ${esc(ez.error || 'unknown error')}<br><small>${esc(ez.baseUrl)}</small>`);
+        const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, local
+        const upcoming = ev.events.filter(e => e.date >= today).length;
+        nowDd.innerHTML = row(ev.warnings.length ? 'bad' : 'ok', `${upcoming} upcoming events from ${ev.source === 'ezfacility' ? 'EZFacility' : 'the database'}`
+          + ev.warnings.map(w => `<br><small>${esc(w)}</small>`).join(''));
+      } catch (err) {
+        [dbDd, ezDd, nowDd].forEach(dd => { dd.innerHTML = row('bad', 'Site API unavailable'); });
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    api('settings').then(s => {
+      srcRadios.forEach(r => { r.checked = r.value === s.eventsSource; });
+      srcOpts.disabled = false;
+      srcSaved.textContent = `Showing: ${SRC[s.eventsSource]}`;
+    }).catch(() => {
+      srcSaved.textContent = 'The site API isn’t running here, so pages show the bundled content. Start it with npm run dev.';
+    });
+    srcRadios.forEach(r => r.addEventListener('change', async () => {
+      srcOpts.disabled = true;
+      srcSaved.textContent = 'Saving…';
+      try {
+        const s = await api('settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventsSource: r.value }) });
+        srcSaved.textContent = `Saved. The site now uses ${SRC[s.eventsSource]}.`;
+        iframe.contentWindow.location.reload();
+        loadStatus();
+      } catch (err) {
+        srcSaved.textContent = `Couldn’t save: ${err.message}`;
+        api('settings').then(s => srcRadios.forEach(x => { x.checked = x.value === s.eventsSource; })).catch(() => {});
+      } finally {
+        srcOpts.disabled = false;
+      }
+    }));
+    refreshBtn.addEventListener('click', loadStatus);
+    loadStatus();
 
     // Scale a 1280×800 desktop homepage to fit the preview box
     const frame = document.getElementById('frame');
